@@ -1,0 +1,12 @@
+#!/bin/bash
+
+{% if server %}
+if mount | grep {{ LOCAL_PATH }} > /dev/null; then
+    echo "Folder already mounted"
+else
+    mkdir -p {{ LOCAL_PATH }}
+    mount {{ server.address.private }}:{{ server.EXPORT_DIRECTORY }} {{ LOCAL_PATH }}
+fi
+{% endif %}
+
+exit 0;

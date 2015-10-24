@@ -1,0 +1,48 @@
+description: A free, open-source, high-performance HTTP server and
+icon: nginx.png
+id: 8e176772-5c6c-4d5a-8f6e-cbf342142520
+name: Nginx
+requirements:
+- linux
+variables:
+- name: PUBLIC_SSL_CERTIFICATE
+  required: false
+  type: File
+  value: files/public.crt
+  visibility: internal
+- name: PRIVATE_SSL_KEY
+  required: false
+  type: File
+  value: files/private.key
+  visibility: internal
+- name: NGINX_CONF
+  required: false
+  type: File
+  value: files/nginx.conf
+  visibility: internal
+- name: NGINX_USER
+  required: false
+  type: Text
+  value: root
+  visibility: internal
+- name: NGINX_GROUP
+  required: false
+  type: Text
+  value: root
+  visibility: internal
+- name: LOG_PATH
+  required: false
+  type: Text
+  value: /var/log/nginx
+  visibility: internal
+- name: CACHE_PATH
+  required: false
+  type: Text
+  value: /var/nginx/cache
+  visibility: internal
+- name: CERTIFICATE_PATH
+  required: false
+  type: Text
+  value: /var/nginx/certificates
+  visibility: internal
+

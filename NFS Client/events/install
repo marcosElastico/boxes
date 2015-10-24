@@ -1,0 +1,8 @@
+#!/bin/bash -e
+
+if [[ -e /etc/redhat-release || -e /etc/system-release ]]; then
+    yum -y install nfs-utils nfs-utils-lib
+else
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get -y install nfs-kernel-server
+fi

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+curl -ks {{ PHP_INI }} | elasticbox config -o /etc/php.ini
+curl -ks {{ PHP_FPM_CONF }} | elasticbox config -o /etc/php-fpm.d/www.conf
+
+# Allow nginx user to write on the php-fpm logs directory
+mkdir -p {{ LOGS_DIRECTORY }}
+chown {{ PHP_USER }}:{{ PHP_GROUP }} {{ LOGS_DIRECTORY }} -R

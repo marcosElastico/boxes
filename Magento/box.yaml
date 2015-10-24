@@ -1,0 +1,92 @@
+description: Magento Web Layer
+icon: magento.png
+id: f4dd017f-4bec-42f4-9614-bd27fd8baf74
+name: Magento
+requirements:
+- internal
+- linux
+variables:
+- name: PHP_USER
+  required: false
+  scope: php
+  type: Text
+  value: nginx
+  visibility: internal
+- name: PHP_GROUP
+  required: false
+  scope: php
+  type: Text
+  value: nginx
+  visibility: internal
+- name: NGINX_USER
+  required: false
+  scope: nginx
+  type: Text
+  value: nginx
+  visibility: internal
+- name: NGINX_GROUP
+  required: false
+  scope: nginx
+  type: Text
+  value: nginx
+  visibility: internal
+- name: LOCAL_PATH
+  required: true
+  scope: nfs
+  type: Text
+  value: /opt/magento/media
+  visibility: internal
+- name: SERVER_NAME
+  required: false
+  type: Text
+  value: localhost
+  visibility: public
+- name: http
+  required: false
+  type: Port
+  value: '80'
+  visibility: public
+- name: MAGENTO_VERSION
+  required: false
+  type: Text
+  value: 1.9.1.0
+  visibility: private
+- name: MAGENTO_CONF
+  required: false
+  type: File
+  value: files/magento.conf
+  visibility: internal
+- name: MAGENTO_CONFIG
+  required: false
+  type: File
+  value: files/local.xml
+  visibility: internal
+- name: MAGENTO_PATH
+  required: false
+  type: Text
+  value: /opt/magento
+  visibility: internal
+- name: mysql
+  required: false
+  type: Binding
+  value: 53b978c0-3c68-4a13-99b6-035aad38e95c
+  visibility: private
+- automatic_updates: major
+  name: nginx
+  required: false
+  type: Box
+  value: 8e176772-5c6c-4d5a-8f6e-cbf342142520
+  visibility: internal
+- automatic_updates: major
+  name: php
+  required: false
+  type: Box
+  value: ed085cfd-8707-4ef7-9611-6e84498d27c6
+  visibility: internal
+- automatic_updates: major
+  name: nfs
+  required: false
+  type: Box
+  value: 320e8be7-5d05-4f74-a040-5d74836ae608
+  visibility: public
+

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Install dependencies
+rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+
+# Download magento
+mkdir -p {{ MAGENTO_PATH }}
+
+curl -ks http://www.magentocommerce.com/downloads/assets/{{ MAGENTO_VERSION }}/magento-{{ MAGENTO_VERSION }}.tar.gz | tar xz -C $(dirname {{ MAGENTO_PATH }})
+chown -R {{ nginx.NGINX_USER }}:{{ nginx.NGINX_GROUP }} {{ MAGENTO_PATH }}

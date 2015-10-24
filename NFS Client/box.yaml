@@ -1,0 +1,18 @@
+description: Mounts an NFS endpoint
+icon: nfs.png
+id: 320e8be7-5d05-4f74-a040-5d74836ae608
+name: NFS Client
+requirements:
+- linux
+variables:
+- name: LOCAL_PATH
+  required: true
+  type: Text
+  value: ''
+  visibility: public
+- name: server
+  required: false
+  type: Binding
+  value: 894c39a1-169f-4cfb-a377-20fd41ab95d5
+  visibility: private
+

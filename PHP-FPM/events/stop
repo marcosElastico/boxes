@@ -1,0 +1,6 @@
+#!/bin/bash
+
+ if pgrep -f php-fpm > /dev/null
+ then 
+     pkill -f php-fpm
+ fi

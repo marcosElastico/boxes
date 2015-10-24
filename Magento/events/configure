@@ -1,0 +1,4 @@
+#!/bin/bash
+
+curl -ks {{ MAGENTO_CONF }} | elasticbox config -o /etc/nginx/conf.d/magento.conf
+curl -ks {{ MAGENTO_CONFIG }} | elasticbox config -o {{ MAGENTO_PATH}}/app/etc/local.xml

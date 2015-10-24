@@ -1,0 +1,22 @@
+#!/bin/bash -e
+
+# Reset the configuration
+curl -ks {{ NGINX_CONF }} | elasticbox config -o /etc/nginx/nginx.conf
+rm -rf /etc/nginx/conf.d/*
+
+# Create directories
+mkdir -p {{ CERTIFICATE_PATH }}
+mkdir -p {{ LOG_PATH }}
+mkdir -p {{ CACHE_PATH }}
+
+# Set permissions
+chown -R {{ NGINX_USER }}:{{ NGINX_GROUP}} {{ CACHE_PATH }}
+
+# Install certicates
+{% if PUBLIC_SSL_CERTIFCATE %}
+    curl -s {{ PUBLIC_SSL_CERTIFICATE }} -o "{{ CERTIFICATE_PATH }}/public.crt"
+{% endif %}
+
+{% if PRIVATE_SSL_KEY %}
+    curl -s {{ PRIVATE_SSL_KEY }} -o "{{ CERTIFICATE_PATH }}/private.key"
+{% endif %}

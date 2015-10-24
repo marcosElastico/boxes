@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<config>
+    <global>
+        <install>
+            <date><![CDATA[Sun, 23 Aug 2015 22:13:07 +0000]]></date>
+        </install>
+        <crypt>
+            <key><![CDATA[{{ MAGENTO_CRYPTOKEY }}]]></key>
+        </crypt>
+        <disable_local_modules>false</disable_local_modules>
+        <resources>
+            <db>
+                <table_prefix><![CDATA[]]></table_prefix>
+            </db>
+            <default_setup>
+                <connection>
+                    <host><![CDATA[{{ mysql.address.private or mysql.address.public }}]]></host>
+                    <username><![CDATA[{{ mysql.MYSQL_USER }}]]></username>
+                    <password><![CDATA[{{ mysql.MYSQL_PASSWORD }}]]></password>
+                    <dbname><![CDATA[{{ mysql.DATABASE_NAME }}]]></dbname>
+                    <initStatements><![CDATA[SET NAMES utf8]]></initStatements>
+                    <model><![CDATA[mysql4]]></model>
+                    <type><![CDATA[pdo_mysql]]></type>
+                    <pdoType><![CDATA[]]></pdoType>
+                    <active>1</active>
+                </connection>
+            </default_setup>
+        </resources>
+        <session_save><![CDATA[files]]></session_save>
+    </global>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <frontName><![CDATA[admin]]></frontName>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+</config>

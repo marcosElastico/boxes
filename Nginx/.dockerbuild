@@ -1,0 +1,2 @@
+BASE_IMAGE=ubuntu
+IMAGE_NAME=elasticbox/nginx

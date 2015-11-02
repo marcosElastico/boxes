@@ -1,0 +1,2 @@
+BASE_IMAGE=centos
+IMAGE_NAME=elasticbox/magento

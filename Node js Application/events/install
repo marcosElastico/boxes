@@ -1,0 +1,20 @@
+#!/bin/bash
+ 
+if [[ -e /etc/redhat-release || -e /etc/system-release ]]; then
+    OS=$(rpm -q --whatprovides redhat-release | cut -d"-" -f1)
+    
+    case $OS in
+        system)
+            yum -y install nodejs npm --enablerepo=epel
+            ;;
+        *)
+            yum -y install epel-release
+            yum -y install nodejs npm
+            ;;
+    esac
+else
+    if [[ ! -z $(uname -a | grep debian) ]]; then curl -sL https://deb.nodesource.com/setup | bash -; fi
+    apt-get -q -y --fix-missing install nodejs npm nodejs-legacy
+fi
+
+npm install forever -g

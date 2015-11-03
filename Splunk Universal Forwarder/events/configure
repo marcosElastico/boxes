@@ -1,0 +1,19 @@
+#!/bin/bash
+
+/opt/splunkforwarder/bin/splunk edit user admin -password {{ PASSWORD }} --no-prompt --accept-license --answer-yes -auth admin:{{ PASSWORD }} | true
+
+/opt/splunkforwarder/bin/splunk enable boot-start
+
+/opt/splunkforwarder/bin/splunk enable listen {{ indexer }} -auth admin:{{ PASSWORD }}
+
+if [ ! -z "{{ RECEIVER }}" ]; then
+    /opt/splunkforwarder/bin/splunk add forward-server {{ RECEIVER }}:{{ indexer }} -auth admin:{{ PASSWORD }}
+fi
+
+{% for receiver in receivers %}
+    /opt/splunkforwarder/bin/splunk add forward-server {{ receiver.address.private or receiver.address.public }}:{{ indexer }} -auth admin:{{ PASSWORD }}
+{% endfor %}
+
+/opt/splunkforwarder/bin/splunk list forward-server -auth admin:{{ PASSWORD }}
+
+/opt/splunkforwarder/bin/splunk add monitor {{ PATH_TO_MONITOR }} -index main -sourcetype {{ SOURCE_TYPE }} -auth admin:{{ PASSWORD }} | true

@@ -1,0 +1,39 @@
+#!/bin/bash -e
+
+run_sql_from_file() {
+    mysql -u root --execute "$(curl -s "$1" | elasticbox config)"
+}
+
+get_binary_log_coordinates() {
+    mysql -u root --execute "SHOW MASTER STATUS\G" | grep "$1:" | cut -d ":" -f 2 | xargs
+}
+
+if [[ -f /etc/my.cnf ]]; then
+    CONFIG_FILE_PATH="/etc/my.cnf"
+else
+    CONFIG_FILE_PATH="/etc/mysql/my.cnf"
+fi
+
+curl -s "{{ CONFIGURATION_FILE }}" | elasticbox config -o "${CONFIG_FILE_PATH}"
+
+if [[ -e /etc/redhat-release || -e /etc/system-release ]]; then
+    mkdir -p /var/log/mysql/
+    chown -R mysql:mysql /var/log/mysql/
+    service mysqld restart
+else
+    service mysql restart
+fi
+
+if [ "{{ NODE_TYPE }}" == "Master" ]; then
+    {% if MASTER_BINDING | length > 0 %}
+        elasticbox set "SLAVE_USERNAME" "{{ MASTER_BINDING.SLAVE_USERNAME }}"
+        elasticbox set "SLAVE_PASSWORD" "{{ MASTER_BINDING.SLAVE_PASSWORD }}"
+    {% endif %}
+
+    run_sql_from_file "{{ MASTER_SQL_CONFIGURATION }}"
+
+    elasticbox set "BINARY_LOG_FILE" "$(get_binary_log_coordinates "File")"
+    elasticbox set "BINARY_LOG_POSITION" "$(get_binary_log_coordinates "Position")"
+else
+    run_sql_from_file "{{ SLAVE_SQL_CONFIGURATION }}"
+fi

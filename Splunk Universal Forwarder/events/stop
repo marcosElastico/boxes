@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if [[ -d "/opt/splunkforwarder/bin/splunk" ]]; then
+   /opt/splunkforwarder/bin/splunk stop
+fi

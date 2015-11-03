@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+curl -ks {{ KIBANA_CONF }} | elasticbox config -o /etc/nginx/conf.d/kibana.conf
+service nginx reload
+
+curl -ks {{ KIBANA_INIT }} | elasticbox config -o /etc/init.d/kibana
+chmod +x /etc/init.d/kibana
+
+elasticbox set "elasticsearch_client.CLUSTER_NAME" "{{ elasticsearch.CLUSTER_NAME }}"

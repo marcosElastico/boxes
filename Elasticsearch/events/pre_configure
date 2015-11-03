@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+mkdir -p -m 755 {{ DATA_PATH }}
+chown elasticsearch:elasticsearch {{ DATA_PATH }}
+
+mkdir -p -m 755 {{ LOGS_PATH }}
+chown elasticsearch:elasticsearch {{ LOGS_PATH }}
+
+sed -i 's|.*ES_HEAP_SIZE=.*$|ES_HEAP_SIZE={{ HEAP_SIZE }}g|' "/etc/default/elasticsearch"
+curl -k {{ CONFIG }} | elasticbox config -o /etc/elasticsearch/elasticsearch.yml

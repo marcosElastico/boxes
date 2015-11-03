@@ -1,0 +1,63 @@
+description: Browser based analytics and search for Elasticsearch
+icon: kibana.png
+id: 5c1a6cce-c8ee-4af5-99e3-2adeae0610ad
+name: Kibana
+requirements:
+- linux
+variables:
+- name: CAN_BE_MASTER
+  options: true,false
+  required: false
+  scope: elasticsearch_client
+  type: Options
+  value: 'false'
+  visibility: public
+- name: DATA_NODE
+  options: true,false
+  required: false
+  scope: elasticsearch_client
+  type: Options
+  value: 'false'
+  visibility: public
+- name: domain
+  required: false
+  type: Text
+  value: example.com
+  visibility: public
+- name: www
+  required: false
+  type: Port
+  value: '80'
+  visibility: public
+- name: kibana_port
+  required: false
+  type: Port
+  value: '5601'
+  visibility: public
+- name: VERSION
+  required: false
+  type: Text
+  value: 4.1.1
+  visibility: public
+- name: KIBANA_CONF
+  required: false
+  type: File
+  value: files/kibana.conf.jinja
+  visibility: public
+- name: KIBANA_INIT
+  required: false
+  type: File
+  value: files/kibana_init.jinja
+  visibility: public
+- name: elasticsearch
+  required: false
+  type: Binding
+  value: 6781a8c8-7961-4ab1-9577-678a19b0eb92
+  visibility: private
+- automatic_updates: major
+  name: elasticsearch_client
+  required: false
+  type: Box
+  value: 6781a8c8-7961-4ab1-9577-678a19b0eb92
+  visibility: public
+

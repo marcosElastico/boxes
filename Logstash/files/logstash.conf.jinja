@@ -1,0 +1,18 @@
+input {
+  lumberjack {
+    port            => {{ lumberjack_port }}
+    ssl_certificate => "{{ LOGSTASH_CRT_PATH }}"
+    ssl_key         => "{{ LOGSTASH_KEY_PATH }}"
+  }
+  tcp {
+    port            => {{ tcp_port }} 
+  }
+}
+
+output {
+  elasticsearch {
+    cluster  => "{{ elasticsearch.CLUSTER_NAME }}"
+    host     => ["{{ elasticsearch.address.private }}"]
+    protocol => "transport"
+  }
+}

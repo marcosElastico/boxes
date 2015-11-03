@@ -1,0 +1,12 @@
+#!/bin/bash -e
+
+{% if servers %}
+    if ! pgrep -f nginx > /dev/null
+    then
+        service nginx start
+    fi
+ 
+    nginx -s reload
+{% else %}
+    echo "Instance doesn't have any binding. Not starting Nginx."
+{% endif %}

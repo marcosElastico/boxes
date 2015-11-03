@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+# Download the ssl certificate and private key. If not defined create key and self signed certificate
+if [[ -z "$(curl -ks {{ LOGSTASH_CRT }})" ]]; then
+    openssl genrsa -des3 -passout pass:x -out passin.key 2048
+    openssl rsa -passin pass:x -in passin.key -out {{ LOGSTASH_KEY_PATH }}
+    rm passin.key
+    openssl req -new -key {{ LOGSTASH_KEY_PATH }} -out public.csr -subj "/C=US/ST=California/L=Logstash Lab/OU=IT DevOps/CN={{ HOSTNAME }}"
+    openssl x509 -req -days 365 -in public.csr -signkey private.key -out {{ LOGSTASH_CRT_PATH }}
+else
+    curl -ks {{ LOGSTASH_CRT }} -o {{ LOGSTASH_CRT_PATH }}
+    curl -ks {{ LOGSTASH_KEY }} -o {{ LOGSTASH_KEY_PATH }}
+fi
+
+curl -ks {{ LOGSTASH_CONF }} | elasticbox config -o /etc/logstash/conf.d/logstash.conf
+curl -ks {{ LOGSTASH_FILTERS }} -o /etc/logstash/conf.d/filters.conf
+
+mkdir -p /opt/logstash/patterns
+curl -ks {{ LOGSTASH_PATTERNS }} -o /opt/logstash/patterns/elasticbox
+chown logstash:logstash /opt/logstash/patterns/elasticbox

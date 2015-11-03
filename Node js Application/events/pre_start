@@ -1,0 +1,11 @@
+#!/bin/bash
+
+PATH="$PATH:/usr/local/sbin:/usr/local/bin"
+
+ps aux | grep {{ folder }}/{{ APP_FOLDER }}/{{ APP_ENTRY_POINT }} | grep -v grep -q
+
+if [ $? -eq 0 ]; then
+    forever stopall
+fi
+
+forever --minUptime 1000 --spinSleepTime 1000 start {{ folder }}/{{ APP_FOLDER }}/{{ APP_ENTRY_POINT }}

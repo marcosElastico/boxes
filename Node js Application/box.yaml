@@ -1,0 +1,42 @@
+description: Downloads and deploys
+icon: nodejs.png
+id: 74a23ed1-5e7e-4b88-b210-a4e212e86802
+name: Node js Application
+requirements:
+- linux
+variables:
+- name: CLONE_DIRECTORY
+  required: false
+  scope: github.git_repo
+  type: Text
+  value: '{{ APP_FOLDER }}'
+  visibility: public
+- name: CLONE_URL
+  required: true
+  scope: github.git_repo
+  type: Text
+  value: ''
+  visibility: public
+- name: APP_ENTRY_POINT
+  required: true
+  type: Text
+  value: app.js
+  visibility: public
+- name: APP_FOLDER
+  required: false
+  type: Text
+  value: app
+  visibility: public
+- name: http
+  required: true
+  type: Port
+  value: '8080'
+  visibility: public
+- automatic_updates: major
+  name: github
+  required: false
+  type: Box
+  value: 6263c69f-a6c0-4c6c-bdeb-ba368cf1fa68
+  visibility: public
+version: '0.1'
+

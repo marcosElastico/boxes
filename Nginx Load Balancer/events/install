@@ -1,0 +1,29 @@
+#!/bin/bash -e
+
+if [[ -e /etc/redhat-release || -e /etc/system-release ]]
+then
+    OS=$(rpm -q --whatprovides redhat-release | cut -d"-" -f1)
+
+    case $OS in
+	    redhat)
+	    	yum -y install epel-release
+            yum -y install nginx
+            ;;
+        centos)
+            yum -y install epel-release
+            yum -y install nginx
+            ;;
+        system)
+            yum -y install nginx
+            ;;
+        fedora)
+            yum -y install nginx
+            ;;
+    esac
+    
+else
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get -q -y update
+    apt-get -q -y install -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" nginx
+fi
+

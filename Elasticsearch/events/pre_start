@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+
+ulimit -l unlimited
+service elasticsearch restart

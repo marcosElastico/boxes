@@ -1,0 +1,12 @@
+#!/bin/bash -e
+
+if [[ -e /etc/redhat-release || -e /etc/system-release ]]; then
+    yum -y install mysql-server
+    mkdir -p /var/log/mysql/
+    chown -R mysql:mysql /var/log/mysql/
+else
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get -q -y update
+    apt-get -q -y install -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mysql-server
+
+fi

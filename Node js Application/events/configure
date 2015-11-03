@@ -1,0 +1,9 @@
+#!/bin/bash
+
+pushd {{ folder }}/{{ APP_FOLDER}}
+
+npm install
+
+elasticbox config -i {{ APP_ENTRY_POINT }} -o {{ APP_ENTRY_POINT }}
+
+popd

@@ -1,0 +1,56 @@
+#!/bin/bash
+
+curl -k -s {{ NGINX_CONF }}   | elasticbox config -o /etc/nginx/nginx.conf
+curl -k -s {{ VIRTUAL_CONF }} | elasticbox config -o /etc/nginx/conf.d/virtual.conf
+
+# Download the ssl certificate and private key. If not defined create key and self signed certificate
+if [[ -z "$(curl -ks {{ JENKINS_PUBLIC_CRT }})" ]]; then
+    openssl genrsa -des3 -passout pass:x -out passin.key 2048
+    openssl rsa -passin pass:x -in passin.key -out private.key
+    rm passin.key
+    openssl req -new -key private.key -out public.csr -subj "/C=US/ST=California/L=Jenkins Lab/OU=IT DevOps/CN={{ SERVER_NAME }}"
+    openssl x509 -req -days 365 -in public.csr -signkey private.key -out public.crt
+else
+    curl -ks {{ JENKINS_PUBLIC_CRT }} -o public.crt
+    curl -ks {{ JENKINS_PRIVATE_KEY }} -o private.key
+fi
+
+if [[ ! -d /var/lib/jenkins/.ssh ]]; then mkdir -p /var/lib/jenkins/.ssh/; fi
+cp private.key /var/lib/jenkins/.ssh/id_rsa
+chmod 600 /var/lib/jenkins/.ssh/id_rsa
+ssh-keygen -f /var/lib/jenkins/.ssh/id_rsa -y > /var/lib/jenkins/.ssh/id_rsa.pub
+chmod 644 /var/lib/jenkins/.ssh/id_rsa.pub
+
+curl -ks {{ SSH_CONFIG }} -o /var/lib/jenkins/.ssh/config
+chmod 644 /var/lib/jenkins/.ssh/config
+chown -hR jenkins /var/lib/jenkins/.ssh
+chgrp -hR jenkins /var/lib/jenkins/.ssh
+
+service jenkins restart
+service nginx restart
+
+if [[ ! -f /var/lib/jenkins/users/admin/config.xml ]]; then
+while [[ -z "$(curl --head --silent {{ address.public or address.private }}:8080/api/python | grep 200)" ]]; do
+	echo `date` " - waiting 10 seconds for Jenkins API to be available..."
+    sleep 10
+done
+
+# Install needed jenkins plugins
+java -jar /var/cache/jenkins/war/WEB-INF/jenkins-cli.jar -s http://{{ address.public or address.private }}:8080/ install-plugin http://updates.jenkins-ci.org/download/plugins/github-api/1.59/github-api.hpi -deploy
+java -jar /var/cache/jenkins/war/WEB-INF/jenkins-cli.jar -s http://{{ address.public or address.private }}:8080/ install-plugin http://updates.jenkins-ci.org/download/plugins/ssh-agent/1.5/ssh-agent.hpi -deploy
+java -jar /var/cache/jenkins/war/WEB-INF/jenkins-cli.jar -s http://{{ address.public or address.private }}:8080/ install-plugin http://updates.jenkins-ci.org/download/plugins/git-client/1.11.1/git-client.hpi -deploy
+java -jar /var/cache/jenkins/war/WEB-INF/jenkins-cli.jar -s http://{{ address.public or address.private }}:8080/ install-plugin http://updates.jenkins-ci.org/download/plugins/scm-api/0.2/scm-api.hpi -deploy
+java -jar /var/cache/jenkins/war/WEB-INF/jenkins-cli.jar -s http://{{ address.public or address.private }}:8080/ install-plugin http://updates.jenkins-ci.org/download/plugins/git/2.0/git.hpi -deploy
+java -jar /var/cache/jenkins/war/WEB-INF/jenkins-cli.jar -s http://{{ address.public or address.private }}:8080/ install-plugin http://updates.jenkins-ci.org/download/plugins/github/1.10/github.hpi -deploy
+java -jar /var/cache/jenkins/war/WEB-INF/jenkins-cli.jar -s http://{{ address.public or address.private }}:8080/ install-plugin http://updates.jenkins-ci.org/download/plugins/ghprb/1.16-5/ghprb.hpi -deploy
+java -jar /var/cache/jenkins/war/WEB-INF/jenkins-cli.jar -s http://{{ address.public or address.private }}:8080/ install-plugin http://updates.jenkins-ci.org/download/plugins/elasticbox/4.0.0/elasticbox.hpi -deploy
+
+# Download configuration and defaut user/password: admin/elasticbox
+
+curl -ks {{ JENKINS_CONFIG }} | elasticbox config -o /var/lib/jenkins/config.xml
+mkdir -p /var/lib/jenkins/users/admin
+curl -ks {{ ADMIN }} | elasticbox config -o /var/lib/jenkins/users/admin/config.xml
+fi
+
+# Restart Jenkins to apply the new configurations
+service jenkins restart

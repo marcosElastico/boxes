@@ -1,0 +1,75 @@
+description: Search and analytics engine that makes data easy to explore
+icon: elasticsearch.png
+id: 6781a8c8-7961-4ab1-9577-678a19b0eb92
+name: Elasticsearch
+requirements:
+- linux
+variables:
+- name: CLUSTER_NAME
+  required: false
+  type: Text
+  value: elasticsearch
+  visibility: public
+- name: DATA_PATH
+  required: false
+  type: Text
+  value: /var/lib/elasticsearch/data
+  visibility: public
+- name: LOGS_PATH
+  required: false
+  type: Text
+  value: /var/log/elasticsearch
+  visibility: public
+- name: REPOSITORY_PATH
+  required: false
+  type: Text
+  value: ''
+  visibility: public
+- name: VERSION
+  required: false
+  type: Text
+  value: 1.7.0
+  visibility: public
+- name: rest
+  required: false
+  type: Port
+  value: '9200'
+  visibility: public
+- name: node
+  required: false
+  type: Port
+  value: '9300'
+  visibility: public
+- name: CAN_BE_MASTER
+  options: true,false
+  required: false
+  type: Options
+  value: 'true'
+  visibility: public
+- name: DATA_NODE
+  options: true,false
+  required: false
+  type: Options
+  value: 'true'
+  visibility: public
+- name: HEAP_SIZE
+  required: false
+  type: Number
+  value: '1'
+  visibility: public
+- name: REPLICAS
+  required: false
+  type: Number
+  value: '1'
+  visibility: public
+- name: SHARDS
+  required: false
+  type: Number
+  value: '5'
+  visibility: public
+- name: CONFIG
+  required: false
+  type: File
+  value: files/elasticsearch.yml.jinja
+  visibility: public
+

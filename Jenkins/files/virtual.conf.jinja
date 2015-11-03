@@ -1,0 +1,19 @@
+gzip  on;
+
+ssl_certificate      {{ folder }}/public.crt;
+ssl_certificate_key  {{ folder }}/private.key;
+
+server {
+  listen {{ address.public or address.private }}:{{ http }};
+  listen {{ address.public or address.private }}:{{ https }} default ssl;
+
+  server_name {{ SERVER_NAME }};
+
+  location / {
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header Host $host;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_pass http://services;
+      break;
+  }
+}

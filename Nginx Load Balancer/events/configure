@@ -1,0 +1,12 @@
+#!/bin/bash -e
+
+if [[ -n "{{ PUBLIC_SSL_CERTIFICATE }}" ]]; then
+    curl -s {{ PUBLIC_SSL_CERTIFICATE }} -o "{{ folder }}/public.crt"
+fi
+
+if [[ -n "{{ PRIVATE_SSL_CERTIFICATE }}" ]]; then
+    curl -s {{ PRIVATE_SSL_CERTIFICATE }} -o "{{ folder }}/private.key"
+fi
+
+curl -s {{ NGINX_CONF }} | elasticbox config -o /etc/nginx/nginx.conf
+curl -s {{ VIRTUAL_CONF }} | elasticbox config -o /etc/nginx/conf.d/virtual.conf

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+apt-get -y update
+apt-get -y install --reinstall ca-certificates
+apt-get -y install python-software-properties software-properties-common
+
+# Add the nginx repositories
+add-apt-repository -y ppa:nginx/stable
+
+apt-get -y update
+apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install nginx
+
+# Reset the configuration
+rm -rf /etc/nginx/sites-enabled/*
+
+curl -ks https://s3-us-west-2.amazonaws.com/ebx-deb-packages/kibana-{{ VERSION }}-linux-x64.tar.gz | tar xz
+if [ -d "kibana" ]; then
+    rm -rf kibana
+fi
+
+mv kibana-{{ VERSION }}-linux-x64 kibana

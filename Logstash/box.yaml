@@ -1,0 +1,74 @@
+description: Centralized Log shipping
+icon: logstash.png
+id: 0b9611bc-491b-452c-93aa-a066f0ad3f4d
+name: Logstash
+requirements:
+- linux
+variables:
+- name: HOSTNAME
+  required: false
+  type: Text
+  value: ''
+  visibility: public
+- name: VERSION
+  required: false
+  type: Text
+  value: 1.5.2
+  visibility: internal
+- name: LOGSTASH_CONF
+  required: false
+  type: File
+  value: files/logstash.conf.jinja
+  visibility: internal
+- name: LOGSTASH_FILTERS
+  required: false
+  type: File
+  value: files/logstash_filters.conf
+  visibility: public
+- name: LOGSTASH_PATTERNS
+  required: false
+  type: File
+  value: files/logstash_patterns.conf
+  visibility: public
+- name: lumberjack_port
+  required: false
+  type: Port
+  value: '5009'
+  visibility: public
+- name: tcp_port
+  required: false
+  type: Port
+  value: '5959'
+  visibility: public
+- name: transport_port
+  required: false
+  type: Port
+  value: '9300'
+  visibility: public
+- name: LOGSTASH_CRT
+  required: true
+  type: File
+  value: files/empty
+  visibility: public
+- name: LOGSTASH_KEY
+  required: true
+  type: File
+  value: files/empty
+  visibility: public
+- name: LOGSTASH_CRT_PATH
+  required: false
+  type: Text
+  value: /etc/logstash/logstash.crt
+  visibility: public
+- name: LOGSTASH_KEY_PATH
+  required: false
+  type: Text
+  value: /etc/logstash/logstash.key
+  visibility: public
+- name: elasticsearch
+  required: false
+  type: Binding
+  value: 6781a8c8-7961-4ab1-9577-678a19b0eb92
+  visibility: private
+version: '0.1'
+

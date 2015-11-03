@@ -1,0 +1,49 @@
+description: Lightweight forwarder
+icon: splunk.png
+id: f546375a-a0ac-43ae-9e6f-9dc5d58bd261
+name: Splunk Universal Forwarder
+requirements:
+- linux
+variables:
+- name: indexer
+  required: true
+  type: Port
+  value: '9997'
+  visibility: public
+- name: management
+  required: true
+  type: Port
+  value: '8089'
+  visibility: public
+- name: INSTALLER
+  required: true
+  type: Text
+  value: http://download.splunk.com/products/splunk/releases/6.2.5/universalforwarder/linux/splunkforwarder-6.2.5-272645-Linux-x86_64.tgz
+  visibility: public
+- name: PASSWORD
+  required: false
+  type: Password
+  value: elasticbox
+  visibility: public
+- name: RECEIVER
+  required: false
+  type: Text
+  value: ''
+  visibility: public
+- name: PATH_TO_MONITOR
+  required: false
+  type: Text
+  value: /var/log/syslog
+  visibility: public
+- name: SOURCE_TYPE
+  required: false
+  type: Text
+  value: SYSLOG
+  visibility: public
+- name: receivers
+  required: false
+  type: Binding
+  value: AnyBox
+  visibility: private
+version: '0.1'
+

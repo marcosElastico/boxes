@@ -1,0 +1,14 @@
+upstream kibana {
+    server localhost:5601;
+}
+
+server {
+  listen                *:{{ www }};
+  
+  server_name           *.{{ domain }};
+  
+  location / {
+    proxy_pass http://kibana;
+    proxy_set_header Host $http_host;
+  }
+}

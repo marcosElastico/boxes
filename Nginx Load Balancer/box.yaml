@@ -1,0 +1,50 @@
+description: HTTP load balancer using the Nginx web server
+icon: nginxIloadIbalancer.png
+id: 50283d47-a5fa-4d35-863c-c28888db0882
+name: Nginx Load Balancer
+requirements:
+- linux
+variables:
+- name: http
+  required: true
+  type: Port
+  value: '80'
+  visibility: public
+- name: fallback_binding_port
+  required: false
+  type: Port
+  value: '80'
+  visibility: public
+- name: NGINX_CONF
+  required: false
+  type: File
+  value: files/nginx.conf
+  visibility: public
+- name: VIRTUAL_CONF
+  required: false
+  type: File
+  value: files/virtual.conf
+  visibility: public
+- name: SSL_ENABLED
+  options: no,yes
+  required: false
+  type: Options
+  value: 'no'
+  visibility: public
+- name: PUBLIC_SSL_CERTIFICATE
+  required: false
+  type: File
+  value: files/public.crt
+  visibility: public
+- name: PRIVATE_SSL_CERTIFICATE
+  required: false
+  type: File
+  value: files/private.key
+  visibility: public
+- name: servers
+  required: false
+  type: Binding
+  value: AnyBox
+  visibility: private
+version: '0.1'
+

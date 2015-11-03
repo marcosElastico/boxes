@@ -1,70 +1,48 @@
-description: Open-source relational database management system
+description: MySQL is the world's most popular open-source database
 icon: mysql.png
-id: 9c1aed1d-fc76-42b9-a163-2766d2faa96b
+id: 71c9a7bf-56fc-43b5-973b-0161981f4857
 name: MySQL
 requirements:
 - linux
 variables:
-- name: DATABASE_NAME
-  required: false
-  type: Text
-  value: ''
-  visibility: public
-- name: PORT
+- name: mysql
   required: false
   type: Port
   value: '3306'
   visibility: public
-- name: SERVER_ID
-  required: false
-  type: Number
-  value: ''
-  visibility: public
-- name: SLAVE_USERNAME
-  required: false
+- name: DATABASE_NAME
+  required: true
   type: Text
-  value: slave_user
+  value: default_db
   visibility: public
-- name: SLAVE_PASSWORD
+- name: MYSQL_USER
+  required: true
+  type: Text
+  value: default_user
+  visibility: public
+- name: MYSQL_PASSWORD
   required: false
   type: Password
   value: ''
   visibility: public
-- name: CONFIGURATION_FILE
-  required: false
-  type: File
-  value: files/my.cnf
-  visibility: public
-- name: MASTER_SQL_CONFIGURATION
-  required: false
-  type: File
-  value: files/master.sql
-  visibility: public
-- name: SLAVE_SQL_CONFIGURATION
-  required: false
-  type: File
-  value: files/slave.sql
-  visibility: public
-- name: NODE_TYPE
-  options: Master,Slave
-  required: false
-  type: Options
-  value: Master
-  visibility: public
-- name: BINARY_LOG_FILE
+- name: MYSQL_DUMP_URL
   required: false
   type: Text
   value: ''
-  visibility: public
-- name: BINARY_LOG_POSITION
-  required: false
-  type: Text
-  value: ''
-  visibility: public
-- name: MASTER_BINDING
+  visibility: private
+- name: master
   required: false
   type: Binding
   value: 71c9a7bf-56fc-43b5-973b-0161981f4857
   visibility: private
-version: '0.1'
+- name: MY_CNF
+  required: false
+  type: File
+  value: files/my.cnf
+  visibility: internal
+- name: DATA_DIRECTORY
+  required: false
+  type: Text
+  value: /var/lib/mysql
+  visibility: internal
 

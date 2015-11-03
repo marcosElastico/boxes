@@ -1,39 +1,126 @@
-#!/bin/bash -e
+#!/bin/bash
 
-run_sql_from_file() {
-    mysql -u root --execute "$(curl -s "$1" | elasticbox config)"
-}
-
-get_binary_log_coordinates() {
-    mysql -u root --execute "SHOW MASTER STATUS\G" | grep "$1:" | cut -d ":" -f 2 | xargs
-}
-
-if [[ -f /etc/my.cnf ]]; then
-    CONFIG_FILE_PATH="/etc/my.cnf"
+# Load the my.cnf file if present
+if [[ -f /etc/my.cnf ]]
+then
+    curl -ks {{ MY_CNF }} | elasticbox config -o /etc/my.cnf
 else
-    CONFIG_FILE_PATH="/etc/mysql/my.cnf"
+    curl -ks {{ MY_CNF }} | elasticbox config -o /etc/mysql/my.cnf
 fi
 
-curl -s "{{ CONFIGURATION_FILE }}" | elasticbox config -o "${CONFIG_FILE_PATH}"
+if [[ ! -d {{ DATA_DIRECTORY }} ]]
+then
+    mysql_install_db --user=mysql --ldata={{ DATA_DIRECTORY }}
+fi
 
-if [[ -e /etc/redhat-release || -e /etc/system-release ]]; then
-    mkdir -p /var/log/mysql/
-    chown -R mysql:mysql /var/log/mysql/
+# Initialize Database
+mkdir -p /etc/mysql/conf.d/
+mkdir -p /var/log/mysql
+chown -R mysql:mysql /var/log/mysql/
+
+if [[ -e /etc/redhat-release || -e /etc/system-release ]]
+then
     service mysqld restart
 else
     service mysql restart
 fi
 
-if [ "{{ NODE_TYPE }}" == "Master" ]; then
-    {% if MASTER_BINDING | length > 0 %}
-        elasticbox set "SLAVE_USERNAME" "{{ MASTER_BINDING.SLAVE_USERNAME }}"
-        elasticbox set "SLAVE_PASSWORD" "{{ MASTER_BINDING.SLAVE_PASSWORD }}"
-    {% endif %}
+{% if master %}
+CURRENT_USER="{{ master.MYSQL_USER }}"
+CURRENT_DATABASE="{{ master.DATABASE_NAME }}"
+CURRENT_PASSWORD="{{ master.MYSQL_PASSWORD }}"
 
-    run_sql_from_file "{{ MASTER_SQL_CONFIGURATION }}"
+# If the master does not have a password it means is being initialized at the same time. Choose a password initiator based on the ID
+until [[ -n "${CURRENT_PASSWORD}" ]]
+do
+    if [[ "{{ instance.id }}" < "{{ master.instance.id }}" ]]
+    then
+        CURRENT_PASSWORD="$(date +%s | sha256sum | base64 | head -c 32)"
+    else
+{% raw %}
+        CURRENT_PASSWORD=$(echo {{ master.MYSQL_PASSWORD }} | elasticbox config)
+{% endraw %}
+    fi
+done
+{% else %}
+CURRENT_USER="{{ MYSQL_USER }}"
+CURRENT_DATABASE="{{ DATABASE_NAME }}"
+CURRENT_PASSWORD={% if MYSQL_PASSWORD %}"{{ MYSQL_PASSWORD }}"{% else %}"$(date +%s | sha256sum | base64 | head -c 32)"{% endif %}
+{% endif %}
 
-    elasticbox set "BINARY_LOG_FILE" "$(get_binary_log_coordinates "File")"
-    elasticbox set "BINARY_LOG_POSITION" "$(get_binary_log_coordinates "Position")"
+# Reset variables
+elasticbox set MYSQL_PASSWORD "${CURRENT_PASSWORD}"
+elasticbox set DATABASE_NAME "${CURRENT_DATABASE}"
+elasticbox set MYSQL_USER "${CURRENT_USER}"
+
+# Initialize database
+mysql --user="root" << \
+----STATEMENTS----
+CREATE DATABASE IF NOT EXISTS ${CURRENT_DATABASE};
+----STATEMENTS----
+
+# Restore mysqldump
+{% if MYSQL_DUMP_URL %}
+curl -ks --retry 10 {{ MYSQL_DUMP_URL }} | tar xzf - -O | mysql --user="root" --database ${CURRENT_DATABASE}
+{% endif %}
+
+mysql --user="root" << \
+----STATEMENTS----
+GRANT ALL ON *.* to "${CURRENT_USER}"@"%" IDENTIFIED BY "${CURRENT_PASSWORD}";
+FLUSH PRIVILEGES;
+----STATEMENTS----
+
+# Reset database dump
+elasticbox set MYSQL_DUMP_URL ""
+
+{% if master %}
+if mysql --user="root" --execute "SHOW SLAVE STATUS" | grep -q Master_Server_Id
+then
+    echo "Slave is already configured"
 else
-    run_sql_from_file "{{ SLAVE_SQL_CONFIGURATION }}"
+    # Wait until server is up and running
+    mysql --user="${CURRENT_USER}" --password="${CURRENT_PASSWORD}" --host="{{ master.address.private }}" --wait --connect-timeout=3600 -e ";"
+
+    # Restore checkpoint
+    until mysqldump --host={{ master.address.private }} \
+                --user="${CURRENT_USER}" \
+                --password="${CURRENT_PASSWORD}" \
+                --compress \
+                --skip-lock-tables \
+                --single-transaction \
+                --flush-logs \
+                --hex-blob \
+                --all-databases | mysql --user="root"
+    do
+        echo "Retrying to retrieve a dump from master"
+    done
+
+    mysql --user="root" << \
+----STATEMENTS----
+CHANGE MASTER TO MASTER_HOST="{{ master.address.private }}",
+                 MASTER_USER="${CURRENT_USER}",
+                 MASTER_PASSWORD="${CURRENT_PASSWORD}";
+
+START SLAVE;
+
+GRANT ALL ON *.* to "${CURRENT_USER}"@"%" IDENTIFIED BY "${CURRENT_PASSWORD}";
+FLUSH PRIVILEGES;
+----STATEMENTS----
 fi
+
+{% else %}
+
+if mysql --user="root" --execute "SHOW SLAVE STATUS" | grep -q Master_Server_Id
+then
+    echo "Resetting slave, master binding not found"
+    mysql --user="root" << \
+----STATEMENTS----
+STOP SLAVE;
+RESET SLAVE ALL;
+----STATEMENTS----
+fi
+
+{% endif %}
+
+# Print current slave status
+mysql --user="root" --execute "SHOW SLAVE STATUS\G;"

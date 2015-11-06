@@ -1,0 +1,28 @@
+icon: sharepoint.png
+id: 4ed364a6-8c24-4aa3-84f1-2183e612b302
+name: Sharepoint 2013 Web Server
+requirements:
+- windows
+variables:
+- name: HTTP
+  required: false
+  type: Port
+  value: '80'
+  visibility: public
+- name: server
+  required: false
+  type: Binding
+  value: e0dc37aa-7915-4263-a861-0b879c0c36dc
+  visibility: private
+- name: database
+  required: false
+  type: Binding
+  value: 6c9e1850-6ba4-4d4d-9f09-06051b47a304
+  visibility: private
+- automatic_updates: major
+  name: prerequisites
+  required: false
+  type: Box
+  value: 9aba136c-9dc8-420d-b699-4531d323956e
+  visibility: private
+

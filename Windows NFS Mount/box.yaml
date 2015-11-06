@@ -1,0 +1,18 @@
+description: Mounts an NFS share in Windows
+icon: nfs.png
+id: 7d37508e-a43e-4f25-9966-676aff2e8cf2
+name: Windows NFS Mount
+requirements:
+- windows
+variables:
+- name: DRIVE_LETTER
+  required: true
+  type: Text
+  value: S
+  visibility: public
+- name: NFS_MOUNT_POINT
+  required: true
+  type: Text
+  value: 10.0.51.120:/data/export
+  visibility: public
+

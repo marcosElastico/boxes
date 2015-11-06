@@ -1,0 +1,20 @@
+#!/bin/bash -e
+
+mkdir -p {{ EXPORT_DIRECTORY }}
+
+# Configure etc/hosts
+sed  -i '/# BEGIN NFS CONFIGURATION/,/# END NFS CONFIGURATION/d' /etc/exports
+cat >> /etc/exports << \
+EXPORTS_CONFIG
+# BEGIN NFS CONFIGURATION
+{{ EXPORT_DIRECTORY }}  {{ EXPORT_HOST }}(rw,sync,no_root_squash,no_subtree_check)
+# END NFS CONFIGURATION
+EXPORTS_CONFIG
+
+if [[ -e /etc/redhat-release || -e /etc/system-release ]]
+then
+    service rpcbind start
+    service nfs start
+else
+    service nfs-kernel-server restart
+fi

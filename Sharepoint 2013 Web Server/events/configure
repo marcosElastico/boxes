@@ -1,0 +1,13 @@
+"Connect to Farm..."
+"databaseIP: {{ database.address.private }}"
+$securedPassword = ConvertTo-SecureString -String "{{ server.FARM_ACCOUNT_PASSWORD }}" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("{{ server.FARM_ACCOUNT }}", $securedPassword)
+$databaseServerName = gwmi win32_computersystem -ComputerName {{ database.address.private }} -Credential $credential | % {$_.Name + "." + $_.Domain} 
+"databaseServerName: $databaseServerName"
+
+"Execute configuration wizard to connect to the already created Sharepoint farm..."
+$cmdLine = "C:\Program Files\Common Files\microsoft shared\Web Server Extensions\15\BIN\psconfig.exe"
+$arguments = "-cmd configdb -connect -server `"$databaseServerName`" -database `"{{ server.CONFIG_DB_NAME }}`" -passphrase `"{{ server.PASSPHRASE }}`" -dbuser `"{{ server.DB_ACCOUNT }}`" -dbpassword `"{{ database.SA_PASSWORD }}`""
+
+$p = Start-Process -FilePath "$cmdLine" -ArgumentList "$arguments" -NoNewWindow -PassThru -Wait
+"Sharepoint configuration wizard returned: $($p.ExitCode)"

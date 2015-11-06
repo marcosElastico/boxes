@@ -1,0 +1,37 @@
+icon: member.png
+id: 51ffee98-49d2-41cc-be8a-14000c73c024
+name: Windows Domain Member
+requirements:
+- windows
+variables:
+- name: DOMAIN
+  required: false
+  type: Text
+  value: ebx.com
+  visibility: private
+- name: OUPATH
+  required: false
+  type: Text
+  value: OU=Domain Controllers,DC=ebx,DC=com
+  visibility: private
+- name: USERNAME
+  required: false
+  type: Text
+  value: admin-tester@ebx.com
+  visibility: private
+- name: PASSWORD
+  required: false
+  type: Password
+  value: Password123!
+  visibility: private
+- name: HOSTNAME
+  required: true
+  type: Text
+  value: '{{ instance.id }}'
+  visibility: private
+- name: DNS
+  required: true
+  type: Text
+  value: 8.8.8.8
+  visibility: private
+

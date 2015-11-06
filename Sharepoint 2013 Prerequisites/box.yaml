@@ -1,0 +1,18 @@
+description: Prerequisites installation and common setup
+icon: sharepoint.png
+id: 9aba136c-9dc8-420d-b699-4531d323956e
+name: Sharepoint 2013 Prerequisites
+requirements:
+- windows
+variables:
+- name: CONFIGURATION
+  required: false
+  type: File
+  value: files/config.xml
+  visibility: internal
+- name: NFS_DRIVE_LETTER
+  required: false
+  type: Text
+  value: S
+  visibility: internal
+

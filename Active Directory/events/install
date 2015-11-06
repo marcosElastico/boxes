@@ -1,0 +1,29 @@
+$host_name = hostname
+"Current hostname: $host_name`n"
+if ( [string]::Compare("{{ HOSTNAME }}", $host_name, $True) -eq 0 )
+{
+	"Hostname is already: {{ HOSTNAME }}.`r`n"
+}
+else
+{	
+    "Renaming hostname to: {{ HOSTNAME }}`n"
+    $securedPassword = ConvertTo-SecureString -String "{{ PASSWORD }}" -asPlainText -Force
+    $credential = New-Object System.Management.Automation.PSCredential("{{ USERNAME }}", $securedPassword)
+    Rename-Computer "{{ HOSTNAME }}"  -DomainCredential $credential
+
+    "Restarting to apply the hostname change...`n"
+    & Shutdown /R /T 10
+    \# Return code to tell EB agent to continue with next job
+    exit 100
+}
+
+# Install AD Domain Services and restard in case that it is not already installed.
+Get-WindowsFeature AD-Domain-Services | ? { $_.Count -eq 0 } | Install-WindowsFeature -Name AD-Domain-Services | & Shutdown /R /T 10 | exit 100
+
+$Password = ConvertTo-SecureString -AsPlainText -String Demo!2015 -Force
+Install-ADDSForest -DomainName ad.ebx.com -SafeModeAdministratorPassword $Password -DomainNetbiosName ebx -DomainMode Win2012R2 -ForestMode Win2012R2 -DatabasePath "%SYSTEMROOT%\NTDS" -LogPath "%SYSTEMROOT%\NTDS" -SysvolPath "%SYSTEMROOT%\SYSVOL" -NoRebootOnCompletion -InstallDns | & Shutdown /R /T 10 | exit 100
+
+$securePassword = ConvertTo-SecureString -String "Password123!" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("Administrator", $securePassword)
+New-ADUser -Credential $credential -Name "Tester" -Path "OU=Privileged,OU=Accounts,DC=ad,DC=ebx,DC=com" -SamAccountName "admin-tester" -GivenName "Tester" -SurName "Test Tested" -AccountPassword $securePassword -Description "Testing User" -UserPrincipalName "admin-tester@ad.elasticbox.com" -DisplayName "Tester Test Tested" -PasswordNeverExpires $true -Enabled $true
+Add-ADGroupMember -identity "CN=Administrators,CN=Builtin,DC=ad,DC=ebx,DC=com" -Member "CN=Tester,OU=Privileged,OU=Accounts,DC=ad,DC=ebx,DC=com"

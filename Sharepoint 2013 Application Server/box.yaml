@@ -1,0 +1,69 @@
+icon: sharepoint.png
+id: e0dc37aa-7915-4263-a861-0b879c0c36dc
+name: Sharepoint 2013 Application Server
+requirements:
+- windows
+variables:
+- name: ADMIN_CONTENT_DB_NAME
+  required: false
+  type: Text
+  value: SP_AdminContentDB
+  visibility: public
+- name: CONFIG_DB_NAME
+  required: false
+  type: Text
+  value: SP_ConfigDB
+  visibility: public
+- name: DB_ACCOUNT
+  required: false
+  type: Text
+  value: sa
+  visibility: public
+- name: DB_ACCOUNT_PASSWORD
+  required: false
+  type: Password
+  value: Password123!
+  visibility: public
+- name: FARM_ACCOUNT
+  required: false
+  type: Text
+  value: EBX\Administrator
+  visibility: public
+- name: FARM_ACCOUNT_PASSWORD
+  required: false
+  type: Password
+  value: Password123!
+  visibility: public
+- name: FARM_PORT
+  required: false
+  type: Port
+  value: '8082'
+  visibility: public
+- name: PASSPHRASE
+  required: false
+  type: Password
+  value: Password123!
+  visibility: public
+- name: CONFIG_DB_ACTION
+  options: CREATE, CONNECT
+  required: true
+  type: Options
+  value: CONNECT
+  visibility: private
+- name: database
+  required: false
+  type: Binding
+  value: 6c9e1850-6ba4-4d4d-9f09-06051b47a304
+  visibility: private
+- automatic_updates: major
+  name: prerequisites
+  required: false
+  type: Box
+  value: 9aba136c-9dc8-420d-b699-4531d323956e
+  visibility: private
+- name: AVAILABILITY_GROUP
+  required: false
+  type: Text
+  value: SQL-SP-AG
+  visibility: public
+

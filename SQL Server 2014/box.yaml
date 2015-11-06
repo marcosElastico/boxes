@@ -1,0 +1,67 @@
+icon: sql_server.png
+id: 6c9e1850-6ba4-4d4d-9f09-06051b47a304
+name: SQL Server 2014
+requirements:
+- windows
+variables:
+- name: ADMIN_ACCOUNTS
+  required: true
+  type: Text
+  value: ELASTICBOX\SQL Admins
+  visibility: private
+- name: CONFIGURATION
+  required: false
+  type: File
+  value: files/ConfigurationFile.ini
+  visibility: private
+- name: INSTANCE_NAME
+  required: false
+  type: Text
+  value: MSSQLSERVER
+  visibility: public
+- name: SA_PASSWORD
+  required: true
+  type: Password
+  value: Python!2015
+  visibility: public
+- name: SQL_PORT
+  required: false
+  type: Port
+  value: '1433'
+  visibility: public
+- name: master
+  required: false
+  type: Binding
+  value: 6c9e1850-6ba4-4d4d-9f09-06051b47a304
+  visibility: private
+- name: NFS_DRIVE_LETTER
+  required: false
+  type: Text
+  value: S
+  visibility: private
+- name: SQL_SCRIPT
+  required: false
+  type: File
+  value: files/script.sql
+  visibility: private
+- name: DOMAIN_ADMIN
+  required: false
+  type: Text
+  value: ELASTICBOX\admin-diego
+  visibility: private
+- name: DOMAIN_ADMIN_PASSWORD
+  required: true
+  type: Password
+  value: Password1234
+  visibility: private
+- name: CLUSTER_NAME
+  required: true
+  type: Text
+  value: SQL-CLUSTER
+  visibility: public
+- name: BACKUP_SHARE
+  required: false
+  type: Text
+  value: Backups
+  visibility: public
+

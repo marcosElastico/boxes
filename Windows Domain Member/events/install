@@ -1,0 +1,79 @@
+#
+# CONFIGURE FIREWALL
+#
+
+# Enable Remote Management - Needed because we use WMI to get computer names.
+& netsh advfirewall firewall set rule group="Remote Administration" new enable=yes
+& netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=yes
+& netsh advfirewall firewall set rule group="Remote Service Management" new enable=yes
+& netsh advfirewall firewall set rule group="Performance Logs and Alerts" new enable=yes
+& Netsh advfirewall firewall set rule group="Remote Event Log Management" new enable=yes
+& Netsh advfirewall firewall set rule group="Remote Scheduled Tasks Management" new enable=yes
+& netsh advfirewall firewall set rule group="Remote Volume Management" new enable=yes
+& netsh advfirewall firewall set rule group="Remote Desktop" new enable=yes
+& netsh advfirewall firewall set rule group="Windows Firewall Remote Management" new enable =yes
+& netsh advfirewall firewall set rule group="windows management instrumentation (wmi)" new enable =yes
+
+
+#
+# SET DNS SERVERS
+#
+# RW: have to set DNS server for now... needs to be fixed.
+$nicConfig = Get-WmiObject Win32_NetworkAdapterConfiguration -Filter "ipenabled = 'true'"
+$nic = Get-WmiObject Win32_NetworkAdapter -Filter "InterfaceIndex = $($nicConfig.InterfaceIndex)" 
+netsh interface ip set dnsservers name="$($nic.NetConnectionID)" source=static address={{ DNS }}
+netsh interface ip add dnsservers name="$($nic.NetConnectionID)" address=8.8.8.8 index=2
+
+
+#
+# Set LowRiskFileTypes to Avoid Prompts
+#
+if ( !(Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\policies\Associations) )
+{
+    New-Item -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\policies -Name Associations
+}
+Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\policies\Associations -Name LowRiskFileTypes -Value ".vbs;.svb;.exe;.bat;.cmd;.pl;.plx;.wsc;.wsf;._MP;.vbe;.js;.jse"
+
+
+$host_name = hostname
+"Current hostname: $host_name`n"
+if ( [string]::Compare("{{ HOSTNAME }}", $host_name, $True) -eq 0 )
+{
+	"Hostname is already: {{ HOSTNAME }}.`r`n"
+}
+else
+{	
+    "Renaming hostname to: {{ HOSTNAME }}`n"
+    $securedPassword = ConvertTo-SecureString -String "{{ PASSWORD }}" -asPlainText -Force
+    $credential = New-Object System.Management.Automation.PSCredential("{{ USERNAME }}", $securedPassword)
+    Rename-Computer "{{ HOSTNAME }}"  -DomainCredential $credential
+
+    "Restarting to apply the hostname change...`n"
+    & Shutdown /R /T 10 /F
+    \# Return code to tell EB agent to continue with next job
+    exit 100
+}
+
+
+$currentDomain = (Get-WmiObject WIN32_ComputerSystem).Domain
+"Current domain: $currentDomain`n"
+if ( [string]::Compare($currentDomain, "{{ DOMAIN }}", $True) -eq 0 )
+{
+	"Already member of domain: {{ DOMAIN }}.`r`n"
+}
+else
+{	
+	"Joining domain: {{ DOMAIN }} ...`n"
+	$securedPassword = ConvertTo-SecureString -String "{{ PASSWORD }}" -asPlainText -Force
+	$credential = New-Object System.Management.Automation.PSCredential("{{ USERNAME }}", $securedPassword)
+	if ( [string]::Compare("{{ OUPATH }}","") -ne 0 ) {
+		Add-Computer -DomainName "{{ DOMAIN }}" -Credential $credential -OUPath "{{ OUPATH }}"
+	} else {
+		Add-Computer -DomainName "{{ DOMAIN }}" -Credential $credential
+	}
+	
+	"Restarting to apply the domain change...`n"
+    & Shutdown /R /T 10 /F
+    \# Return code to tell EB agent to continue with next job
+    exit 100
+}

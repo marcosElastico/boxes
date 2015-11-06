@@ -1,0 +1,4 @@
+"Unjoining domain: {{ DOMAIN }} ...`n"
+$securedPassword = ConvertTo-SecureString -String "{{ PASSWORD }}" -asPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("{{ USERNAME }}", $securedPassword)
+Remove-Computer -ComputerName {{ HOSTNAME }} -UnJoinDomainCredential $credential -Force

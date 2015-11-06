@@ -1,0 +1,55 @@
+#
+# Download script.sql file and replace EB variables in file
+#
+"Download SQL Script File..."
+$currentDir = (Get-Location).Path
+$scriptFile = "$currentDir\script.sql"
+
+$wc = New-Object System.Net.WebClient
+$wc.DownloadFile("{{ SQL_SCRIPT }}", $scriptFile)
+"SQL Script File: $scriptFile"
+
+elasticbox config -i $scriptFile -o $scriptFile
+
+
+#
+# Invoke Sql Cmd using script.sql as input file
+#
+$error.clear()
+Import-Module SqlPs -DisableNameChecking
+if ($error.count -ge 1){
+"Restarting to be able to import the SqlPs module...`n"
+& Shutdown /R /T 10
+\# Return code to tell EB agent to continue with next job
+exit 100
+}
+else
+{
+Invoke-Sqlcmd -inputfile $scriptFile -Username "sa" -Password "{{ SA_PASSWORD }}" -ErrorAction 'Stop' -Verbose -QueryTimeout 1800
+}
+
+
+#
+# Create Share for Database Backups
+#
+New-Item -ItemType Directory -Force -Path C:\{{ BACKUP_SHARE }}
+net share "Backups=C:\{{ BACKUP_SHARE }}" "/GRANT:EVERYONE,FULL"
+
+
+#
+# Create Failover cluster without shared storage if a master binding is defined, using a new Powershell Session with CredSSP credentials with an domain admin account
+# To define an static address to the cluster, add StaticAddress parameter to New-Cluster command. i.e.: -StaticAddress '10.0.49.251'
+{% if master is defined %}
+$password = "{{ DOMAIN_ADMIN_PASSWORD }}" | ConvertTo-SecureString -asPlainText -Force
+$username = "{{ DOMAIN_ADMIN }}" 
+$credential = New-Object System.Management.Automation.PSCredential($username,$password)
+
+$result = ping -a -n 1 {{ master.address.private }} | where { $_ -match "Pinging"}
+$master_hostname = $result.split(" ")[1]
+
+$session = New-PSSession -ComputerName $master_hostname -Credential $credential -Authentication CredSSP -EnableNetworkAccess
+
+# Create the scriptblock to expand local variables
+$sbc=[scriptblock]::Create("New-Cluster -Name {{ master.CLUSTER_NAME or CLUSTER_NAME }} -Node $master_hostname, $env:ComputerName -StaticAddress '10.0.49.234' -NoStorage")
+Invoke-Command -Session $session -ScriptBlock $sbc
+{% endif %}

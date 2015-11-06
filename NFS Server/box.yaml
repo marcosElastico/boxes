@@ -1,0 +1,17 @@
+icon: nfsnserver.png
+id: c065960d-278b-4cbc-ae9b-00663975c9de
+name: NFS Server
+requirements:
+- linux
+variables:
+- name: EXPORT_HOST
+  required: false
+  type: Text
+  value: 10.0.0.0/16
+  visibility: private
+- name: EXPORT_DIRECTORY
+  required: false
+  type: Text
+  value: /data/export
+  visibility: internal
+

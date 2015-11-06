@@ -1,0 +1,12 @@
+icon: member.png
+id: 606e8e6a-507c-4338-825d-5011a1ce7a82
+name: Active Directory
+requirements:
+- windows
+variables:
+- name: HOSTNAME
+  required: true
+  type: Text
+  value: DC01
+  visibility: private
+

@@ -1,0 +1,17 @@
+#
+# Remove Failover cluster if a master binding is defined, using a new Powershell Session with CredSSP credentials with an domain admin account
+#
+{% if master is defined %}
+$password = "{{ DOMAIN_ADMIN_PASSWORD }}" | ConvertTo-SecureString -asPlainText -Force
+$username = "{{ DOMAIN_ADMIN }}" 
+$credential = New-Object System.Management.Automation.PSCredential($username,$password)
+
+$result = ping -a -n 1 {{ master.address.private }} | where { $_ -match "Pinging"}
+$master_hostname = $result.split(" ")[1]
+
+$session = New-PSSession -ComputerName $master_hostname -Credential $credential -Authentication CredSSP -EnableNetworkAccess
+
+# Create the scriptblock to expand local variables
+$sbc=[scriptblock]::Create("Remove-Cluster -CleanupAD -Cluster {{ master.CLUSTER_NAME or CLUSTER_NAME }} -Force")
+Invoke-Command -Session $session -ScriptBlock $sbc
+{% endif %}

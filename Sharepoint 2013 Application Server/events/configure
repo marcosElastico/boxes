@@ -1,0 +1,120 @@
+## Sets the 'max degree of parallelism' value to 1 for the specified SQL server instance 
+## Port 1433 is used if not specified 
+## 2012-10-08 - www.pointbeyond.com 
+## NOTE: This function requires at least serveradmin level permissions within SQL server 
+function SetMaxDegreeOfParallelism() 
+{ 
+    Param( 
+        $server, 
+        $sapassword, 
+        $port="1433") 
+ 
+    $conn = new-object System.Data.SqlClient.SqlConnection 
+ 
+    try 
+    { 
+        $connectionString = "Server="+$server+","+$port+";Database=master;user id=sa;password=$sapassword" 
+ 
+        $conn.ConnectionString = $connectionString 
+        $conn.Open() 
+ 
+        $cmd = new-object System.Data.SqlClient.SqlCommand 
+        $cmd.Connection = $conn 
+ 
+        # Ensure advanced options are available 
+        $commandText = "sp_configure 'show advanced options', 1;RECONFIGURE WITH OVERRIDE;"         
+        $cmd.CommandText = $commandText 
+        $r = $cmd.ExecuteNonQuery() 
+ 
+        # Set the Max Degree of Parallelism value to 1 
+        write-host "Setting 'max degree of parallelism' value to 1 for server $server..." 
+        $commandText = "sp_configure 'max degree of parallelism', 1;RECONFIGURE WITH OVERRIDE"         
+        $cmd.CommandText = $commandText 
+        $r = $cmd.ExecuteNonQuery() 
+ 
+        write-host "Success" 
+    } 
+    catch 
+    { 
+        write-host "An error occurred trying to set the MaxDegreeOfParallelism value to 1 for server $server" -Fore Red 
+        write-host "Ensure that server and port parameters are correct and that the current user has at least serveradmin permissions within SQL" -Fore Red 
+    } 
+    finally 
+    { 
+        $conn.Close() 
+    } 
+}
+
+# Call the function passing in SQL server name/instance/alias and port number 
+SetMaxDegreeOfParallelism -server "{{ database.address.private }}" -sapassword "{{ database.SA_Password }}" -port "{{ database.SQL_Port }}"
+
+"Setup Farm..."
+"databaseIP: {{ database.address.private }}"
+$securedPassword = ConvertTo-SecureString -String "{{ FARM_ACCOUNT_PASSWORD }}" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("{{ FARM_ACCOUNT }}", $securedPassword)
+$databaseServerName = gwmi win32_computersystem -ComputerName {{ database.address.private }} -Credential $credential | % {$_.Name + "." + $_.Domain} 
+"databaseServerName: $databaseServerName"
+
+if ("{{ CONFIG_DB_ACTION }}" -match "CONNECT") {
+    "Execute configuration wizard to connect to the already created Sharepoint farm..."
+    $cmdLine = "C:\Program Files\Common Files\microsoft shared\Web Server Extensions\15\BIN\psconfig.exe"
+    $arguments = "-cmd configdb -connect -server `"$databaseServerName`" -database `"{{ CONFIG_DB_NAME }}`" -passphrase `"{{ PASSPHRASE }}`" -dbuser `"{{ DB_ACCOUNT }}`" -dbpassword `"{{ database.SA_PASSWORD }}`" -cmd helpcollections -installall -cmd secureresources -cmd services -install -cmd installfeatures -cmd adminvs -provision -port {{ FARM_PORT }} -windowsauthprovider onlyusentlm -cmd applicationcontent -install"
+
+    $p = Start-Process -FilePath "$cmdLine" -ArgumentList "$arguments" -NoNewWindow -PassThru -Wait
+    "Sharepoint installer returned: $($p.ExitCode)"
+} else {
+    "Execute configuration wizard to create the Sharepoint farm..."
+    $cmdLine = "C:\Program Files\Common Files\microsoft shared\Web Server Extensions\15\BIN\psconfig.exe"
+    $arguments = "-cmd configdb -create -server `"$databaseServerName`" -database `"{{ CONFIG_DB_NAME }}`" -passphrase `"{{ PASSPHRASE }}`" -dbuser `"{{ DB_ACCOUNT }}`" -dbpassword `"{{ database.SA_PASSWORD }}`" -user `"{{ FARM_ACCOUNT }}`" -password `"{{ FARM_ACCOUNT_PASSWORD }}`" -admincontentdatabase `"{{ ADMIN_CONTENT_DB_NAME }}`" -cmd helpcollections -installall -cmd secureresources -cmd services -install -cmd installfeatures -cmd adminvs -provision -port {{ FARM_PORT }} -windowsauthprovider onlyusentlm -cmd applicationcontent -install"
+
+    $p = Start-Process -FilePath "$cmdLine" -ArgumentList "$arguments" -NoNewWindow -PassThru -Wait
+    "Sharepoint installer returned: $($p.ExitCode)"
+    
+    Import-Module FailOverClusters
+    Import-Module SqlPs -DisableNameChecking
+
+    $nodes=Get-ClusterNode -Cluster {{ database.CLUSTER_NAME }}
+
+    $sa_securedPassword = ConvertTo-SecureString -String "{{ database.SA_PASSWORD }}" -AsPlainText -Force
+    $sa_credential = New-Object System.Management.Automation.PSCredential("{{ DB_ACCOUNT }}", $securedPassword)
+
+    # Create an in-memory representation of the primary replica.
+    $primaryReplica = New-SqlAvailabilityReplica -Credential $sa_credential -Name "$nodes[0].Name\{{ database.INSTANCE_NAME }}" -EndpointURL "TCP://{{ PRIMARY_SERVER.address.public }}:5022" -AvailabilityMode "SynchronousCommit" -FailoverMode "Automatic" -Version 12 -AsTemplate
+
+    # Create an in-memory representation of the secondary replica.
+    $secondaryReplica = New-SqlAvailabilityReplica -Credential $sa_credential -Name "$nodes[1].Name\{{ database.INSTANCE_NAME }}" -EndpointURL "TCP://{{ SECONDARY_SERVER.address.public }}:5022" -AvailabilityMode "SynchronousCommit" -FailoverMode "Automatic" -Version 12 -AsTemplate
+
+    # Create the availability group
+    New-SqlAvailabilityGroup-Name -Credential $sa_credential "{{ AVAILABILITY_GROUP }}" -Path "SQLSERVER:\SQL\$nodes[0].Name\{{ database.INSTANCE_NAME }}" -AvailabilityReplica @($primaryReplica,$secondaryReplica) -Database "{{ ADMIN_CONTENT_DB_NAME }}"
+
+    # Join the secondary replica to the availability group.
+    Join-SqlAvailabilityGroup -Credential $sa_credential -Path "SQLSERVER:\SQL\$nodes[1].Name\{{ database.INSTANCE_NAME }}" -Name "{{ AVAILABILITY_GROUP }}"
+
+
+    # Backup ADMIN_CONTENT_DB_NAME and its log on the primary
+    Backup-SqlDatabase -Credential $sa_credential -Database "{{ ADMIN_CONTENT_DB_NAME }}" -BackupFile "\\$nodes[0].Name\{{ BACKUP_SHARE }}\{{ ADMIN_CONTENT_DB_NAME }}.bak" -ServerInstance "$nodes[0].Name\{{ database.INSTANCE_NAME }}"
+
+    Backup-SqlDatabase -Credential $sa_credential -Database "{{ ADMIN_CONTENT_DB_NAME }}" -BackupFile "\\$nodes[0].Name\{{ BACKUP_SHARE }}\{{ ADMIN_CONTENT_DB_NAME }}.log" -ServerInstance "$nodes[0].Name\{{ database.INSTANCE_NAME }}" -BackupAction Log 
+
+    # Restore ADMIN_CONTENT_DB_NAME and log on the secondary (using NO RECOVERY)
+    Restore-SqlDatabase -Credential $sa_credential -Database "{{ ADMIN_CONTENT_DB_NAME }}" -BackupFile "\\$nodes[0].Name\{{ BACKUP_SHARE }}\{{ ADMIN_CONTENT_DB_NAME }}.bak" -ServerInstance "$nodes[1].Name\{{ database.INSTANCE_NAME }}" -NoRecovery
+
+    Restore-SqlDatabase -Credential $sa_credential -Database "{{ ADMIN_CONTENT_DB_NAME }}" -BackupFile "\\$nodes[0].Name\{{ BACKUP_SHARE }}\{{ ADMIN_CONTENT_DB_NAME }}.log" -ServerInstance "$nodes[1].Name\{{ database.INSTANCE_NAME }}" -RestoreAction Log -NoRecovery
+
+    # Join the secondary database to the availability group.
+    Add-SqlAvailabilityDatabase -Credential $sa_credential -Path "SQLSERVER:\SQL\$nodes[1].Name\{{ database.INSTANCE_NAME }}\AvailabilityGroups\{{ AVAILABILITY_GROUP }}" -Database "{{ ADMIN_CONTENT_DB_NAME }}"
+
+
+    # Backup CONFIG_DB_NAME and its log on the primary
+    Backup-SqlDatabase -Credential $sa_credential -Database "{{ CONFIG_DB_NAME }}" -BackupFile "\\$nodes[0].Name\{{ BACKUP_SHARE }}\{{ CONFIG_DB_NAME }}.bak" -ServerInstance "$nodes[0].Name\{{ database.INSTANCE_NAME }}"
+
+    Backup-SqlDatabase -Credential $sa_credential -Database "{{ CONFIG_DB_NAME }}" -BackupFile "\\$nodes[0].Name\{{ BACKUP_SHARE }}\{{ CONFIG_DB_NAME }}.log" -ServerInstance "$nodes[0].Name\{{ database.INSTANCE_NAME }}" -BackupAction Log 
+
+    # Restore CONFIG_DB_NAME and log on the secondary (using NO RECOVERY)
+    Restore-SqlDatabase -Credential $sa_credential -Database "{{ CONFIG_DB_NAME }}" -BackupFile "\\$nodes[0].Name\{{ BACKUP_SHARE }}\{{ CONFIG_DB_NAME }}.bak" -ServerInstance "$nodes[1].Name\{{ database.INSTANCE_NAME }}" -NoRecovery
+
+    Restore-SqlDatabase -Credential $sa_credential -Database "{{ CONFIG_DB_NAME }}" -BackupFile "\\$nodes[0].Name\{{ BACKUP_SHARE }}\{{ CONFIG_DB_NAME }}.log" -ServerInstance "$nodes[1].Name\{{ database.INSTANCE_NAME }}" -RestoreAction Log -NoRecovery
+
+    # Join the secondary database to the availability group.
+    Add-SqlAvailabilityDatabase -Credential $sa_credential -Path "SQLSERVER:\SQL\$nodes[1].Name\{{ database.INSTANCE_NAME }}\AvailabilityGroups\{{ AVAILABILITY_GROUP }}" -Database "{{ CONFIG_DB_NAME }}"
+}

@@ -1,0 +1,84 @@
+#
+# Copy Microsoft SQL Server 2014 SP1 image from the NFS server and mount it 
+#
+New-Item -ItemType Directory -Force -Path C:\Isos
+
+Copy-Item {{ NFS_DRIVE_LETTER }}:\SQLServer2014SP1-FullSlipstream-x64-ENU.iso C:\Isos
+
+$driveLetter = (Get-Volume -FileSystemLabel SQL2014_x64_ENU).DriveLetter
+if ($driveLetter -eq $null) {
+  $mountResult = Mount-DiskImage -ImagePath C:\Isos\SQLServer2014SP1-FullSlipstream-x64-ENU.iso -PassThru
+  $driveLetter = ($mountResult | Get-Volume).DriveLetter
+}
+
+
+#
+# Installs Failover-Clustering and RSAT-Clustering required for MS SQL 2014 Cluster
+#
+Install-WindowsFeature Failover-Clustering, RSAT-Clustering -IncludeAllSubFeature
+
+
+#
+# Enables CredSSP authentication on as a client and as a server role in this instance
+# -Force is needed to enable CredSSP without first prompting the user
+#
+Enable-WSManCredSSP -Role Server -Force
+Enable-WSManCredSSP -Role Client -DelegateComputer * -Force
+
+
+#
+# Installs .Net Framework 3.5 required for MS SQL 2014 Setup
+#
+Install-WindowsFeature Net-Framework-Core
+
+
+#
+# Download configuration file and replace EB variables in file
+#
+"Download configuration file..."
+$currentDir = (Get-Location).Path
+$configFile = "$currentDir\ConfigurationFile.ini"
+
+$wc = New-Object System.Net.WebClient
+$wc.DownloadFile("{{ CONFIGURATION }}", $configFile)
+"ConfigFile: $configFile"
+
+elasticbox config -i $configFile -o $configFile
+
+
+#
+# Execute SQL Setup
+#
+"Execute SQL setup..."
+$cmdLine = "${driveLetter}:\Setup.exe"
+& "$cmdLine" /SAPWD="{{ SA_PASSWORD }}" /ConfigurationFile=$configFile
+"Setup returned: $LastExitCode"
+
+
+#
+# Set TCP Port - Not available via config file.
+#
+"Set TCP Port..."   
+$sqlServerName = hostname
+$sqlInstanceName = "{{ INSTANCE_NAME }}"
+
+# Load SMO Wmi.ManagedComputer assembly
+[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.SqlWmiManagement") | out-null  
+
+# Connect to the instance using SMO
+$sqlServer = New-Object ('Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer') $sqlServerName
+$uri = "ManagedComputer[@Name='$sqlServerName']/ServerInstance[@Name='{{ INSTANCE_NAME }}']/ServerProtocol[@Name='Tcp']"
+$tcp = $sqlServer.GetSmoObject($uri)
+$sqlServer.GetSmoObject("$uri/IPAddress[@Name='IPAll']").IPAddressProperties['TcpPort'].Value = "{{ SQL_PORT }}"
+$tcp.alter()
+    
+"Restart SQL Service..."
+Restart-Service $sqlInstanceName
+
+
+#
+# Configure Firewall
+#
+"Configure Firewall..."
+New-NetFirewallRule -DisplayName "MSSQL ENGINE TCP" -Direction Inbound -LocalPort {{ SQL_PORT }} -Protocol TCP -Action Allow
+

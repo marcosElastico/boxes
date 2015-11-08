@@ -1,2 +1,2 @@
-BASE_IMAGE=centos
+DOCKERFILE=magento.Dockerfile
 IMAGE_NAME=elasticbox/magento

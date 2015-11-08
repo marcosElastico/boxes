@@ -1,2 +1,2 @@
-BASE_IMAGE=ubuntu
+DOCKERFILE=nginx.Dockerfile
 IMAGE_NAME=elasticbox/nginx

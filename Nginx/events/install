@@ -5,24 +5,24 @@ then
     OS=$(rpm -q --whatprovides redhat-release | cut -d"-" -f1)
 
     case $OS in
-	    redhat)
-	    	yum -y install epel-release
-            yum -y install nginx
+        redhat)
+	    yum -y install epel-release
+            yum -y install nginx curl
             ;;
         centos)
             yum -y install epel-release
-            yum -y install nginx
+            yum -y install nginx curl
             ;;
         system)
-            yum -y install nginx
+            yum -y install nginx curl
             ;;
         fedora)
-            yum -y install nginx
+            yum -y install nginx curl
             ;;
     esac
     
 else
     export DEBIAN_FRONTEND=noninteractive
     apt-get -q -y update
-    apt-get -q -y install -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" nginx
+    apt-get -q -y install -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" nginx curl
 fi

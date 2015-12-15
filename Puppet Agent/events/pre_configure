@@ -1,0 +1,14 @@
+#!/bin/bash
+
+[[ -d /etc/facter/facts.d/ ]] || mkdir -p /etc/facter/facts.d/
+
+# Download puppet.conf and facter
+curl -ks $PUPPET_CONF | elasticbox config -o /etc/puppet/puppet.conf
+curl -ks $PUPPET_FACTER  | elasticbox config -o /etc/facter/facts.d/facter.sh
+chmod +x /etc/facter/facts.d/facter.sh
+
+# Run puppet
+puppet agent -v --detailed-exitcodes --onetime --no-daemonize
+
+# Override exit code 2 (No changes)
+[[ $? -eq 0 || $? -eq 2 ]] && exit 0 || exit $?

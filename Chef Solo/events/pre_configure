@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export PATH=$PATH:/usr/local/bin
+curl -ks $CHEF_SOLO_RB | elasticbox config -o solo.rb
+curl -ks $CHEF_SOLO_JSON | elasticbox config | chef-solo -c solo.rb -j /dev/stdin

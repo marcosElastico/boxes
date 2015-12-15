@@ -1,6 +1,6 @@
 description: HTTP load balancer using the Nginx web server
 icon: nginxIloadIbalancer.png
-id: 50283d47-a5fa-4d35-863c-c28888db0882
+id: 0819b5d8-047c-4783-8051-e48399a1c840
 name: Nginx Load Balancer
 requirements:
 - linux
@@ -46,5 +46,4 @@ variables:
   type: Binding
   value: AnyBox
   visibility: private
-version: '0.1'
 

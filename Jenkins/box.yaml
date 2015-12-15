@@ -1,6 +1,6 @@
 description: With ElasticBox CI plugin
 icon: jenkins.png
-id: 59c147c6-f608-4134-a2d6-9aaf0148cb91
+id: e0715702-cf5c-4c88-bfa1-2e5e3808e597
 name: Jenkins
 requirements:
 - linux
@@ -65,5 +65,4 @@ variables:
   type: File
   value: files/ssh.config
   visibility: public
-version: '0.1'
 

@@ -1,0 +1,40 @@
+description: Easy-to-use scalable sync solution that will effortlessly syncs local
+  app data with Couchbase Lite to a remote Couchbase Server database
+icon: couchbasetgateway.png
+id: 69245bf9-ddd1-461e-a1c3-52552bd73b2f
+name: Couchbase Sync Gateway
+requirements:
+- linux
+variables:
+- name: ADMIN_PORT
+  required: true
+  type: Port
+  value: '4985'
+  visibility: public
+- name: BUCKET
+  required: true
+  type: Text
+  value: sync_gateway
+  visibility: public
+- name: CONFIG
+  required: true
+  type: File
+  value: files/config.json
+  visibility: public
+- name: COUCHBASE_SERVER
+  required: false
+  type: Binding
+  value: c4006ec0-daaf-4f71-8d17-af6505addfe6
+  visibility: private
+- name: EDITION
+  options: community,enterprise
+  required: true
+  type: Options
+  value: enterprise
+  visibility: public
+- name: SYNC_PORT
+  required: true
+  type: Port
+  value: '4984'
+  visibility: public
+

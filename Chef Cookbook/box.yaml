@@ -1,0 +1,23 @@
+description: Cookbook with a simple recipe
+icon: chef-cookbook.png
+id: c149114d-8298-4c36-be8a-1fb02e6ec975
+name: Chef Cookbook
+requirements:
+- linux
+variables:
+- name: CHEF_COOKBOOK_NAME
+  required: false
+  type: Text
+  value: elasticbox
+  visibility: public
+- name: CHEF_DEFAULT_RB
+  required: false
+  type: File
+  value: files/default.rb
+  visibility: public
+- name: CHEF_METADATA_RB
+  required: false
+  type: File
+  value: files/metadata.rb
+  visibility: public
+

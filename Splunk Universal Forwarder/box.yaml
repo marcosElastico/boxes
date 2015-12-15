@@ -1,6 +1,6 @@
 description: Lightweight forwarder
 icon: splunk.png
-id: f546375a-a0ac-43ae-9e6f-9dc5d58bd261
+id: 69a83a2c-ecba-40db-9c06-94fa144a5f78
 name: Splunk Universal Forwarder
 requirements:
 - linux
@@ -45,5 +45,4 @@ variables:
   type: Binding
   value: AnyBox
   visibility: private
-version: '0.1'
 

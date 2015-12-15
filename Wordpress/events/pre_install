@@ -1,0 +1,3 @@
+if [[ -f /etc/system-release ]] && [[ "$(< /etc/system-release)" == *"Amazon Linux AMI"* ]]; then
+	elasticbox set chef_solo.COOKBOOK_LIST $(echo "{{ AWS_COOKBOOK_LIST }}" | sed -e 's#.*/services/\(\)#/services/\1#')
+fi

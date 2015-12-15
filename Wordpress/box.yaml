@@ -1,0 +1,60 @@
+description: A semantic personal publishing platform with a focus on aesthetics, web
+  standards, and usability
+icon: wordpress.png
+id: 1186ce20-96f2-458d-ae62-19496036b275
+name: Wordpress
+requirements:
+- linux
+variables:
+- name: CHEF_DEFAULT_RB
+  required: false
+  scope: chef_cookbook
+  type: File
+  value: files/default.rb
+  visibility: public
+- name: CHEF_METADATA_RB
+  required: false
+  scope: chef_cookbook
+  type: File
+  value: files/metadata.rb
+  visibility: public
+- name: CHEF_SOLO_JSON
+  required: false
+  scope: chef_solo
+  type: File
+  value: files/solo.json
+  visibility: public
+- name: http
+  required: false
+  type: Port
+  value: '80'
+  visibility: public
+- name: https
+  required: false
+  type: Port
+  value: '443'
+  visibility: public
+- automatic_updates: 'off'
+  name: chef_cookbook
+  required: false
+  type: Box
+  value: c149114d-8298-4c36-be8a-1fb02e6ec975
+  visibility: public
+- automatic_updates: 'off'
+  name: chef_solo
+  required: false
+  type: Box
+  value: 05b76b08-5238-4e05-ae5f-8ea8afe00378
+  visibility: public
+- name: COOKBOOK_LIST
+  required: false
+  scope: chef_solo
+  type: File
+  value: files/Cookbooks.config
+  visibility: public
+- name: AWS_COOKBOOK_LIST
+  required: false
+  type: File
+  value: files/Aws_Cookbooks.config
+  visibility: public
+

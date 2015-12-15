@@ -1,0 +1,6 @@
+#!/bin/bash
+
+#if($MAIN_NODE.address)
+export PATH=$PATH:/opt/couchbase/bin
+couchbase-cli rebalance -c ${MAIN_NODE.address.private}:${MAIN_NODE.HTTP} -u ${MAIN_NODE.USERNAME} -p ${MAIN_NODE.PASSWORD} --server-remove=${address.private}:${HTTP}
+#end

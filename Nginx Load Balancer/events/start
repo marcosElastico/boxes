@@ -6,7 +6,7 @@
         service nginx start
     fi
  
-    nginx -s reload
+    service nginx reload
 {% else %}
     echo "Instance doesn't have any binding. Not starting Nginx."
 {% endif %}

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [[ -e /etc/redhat-release || -e /etc/system-release ]]; then
+    service mysqld restart
+else
+    service mysql restart
+fi

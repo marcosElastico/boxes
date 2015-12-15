@@ -1,0 +1,23 @@
+description: Opscode Chef client
+icon: chef.png
+id: 05b76b08-5238-4e05-ae5f-8ea8afe00378
+name: Chef Solo
+requirements:
+- linux
+variables:
+- name: CHEF_SOLO_JSON
+  required: false
+  type: File
+  value: files/solo.json
+  visibility: public
+- name: CHEF_SOLO_RB
+  required: false
+  type: File
+  value: files/solo.rb
+  visibility: public
+- name: COOKBOOK_LIST
+  required: false
+  type: File
+  value: files/Cookbooks.config
+  visibility: public
+

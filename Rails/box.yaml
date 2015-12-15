@@ -1,0 +1,59 @@
+description: Rails Framework
+icon: rails.png
+id: 06227663-5f55-43ed-b94f-f801e3f9938c
+name: Rails
+requirements:
+- linux
+variables:
+- name: CHEF_DEFAULT_RB
+  required: false
+  scope: chef_cookbook
+  type: File
+  value: files/default.rb
+  visibility: public
+- name: CLONE_URL
+  required: false
+  type: Text
+  value: ''
+  visibility: public
+- name: RAILS_APP
+  required: false
+  type: Text
+  value: ''
+  visibility: public
+- name: http
+  required: false
+  type: Port
+  value: '3000'
+  visibility: public
+- name: CHEF_METADATA_RB
+  required: false
+  scope: chef_cookbook
+  type: File
+  value: files/metadata.rb
+  visibility: public
+- name: CHEF_SOLO_JSON
+  required: false
+  scope: chef_solo
+  type: File
+  value: files/solo.json
+  visibility: public
+- automatic_updates: 'off'
+  name: chef_cookbook
+  required: false
+  type: Box
+  value: c149114d-8298-4c36-be8a-1fb02e6ec975
+  visibility: public
+- automatic_updates: 'off'
+  name: chef_solo
+  required: false
+  type: Box
+  value: 05b76b08-5238-4e05-ae5f-8ea8afe00378
+  visibility: public
+- name: COOKBOOK_LIST
+  required: false
+  scope: chef_solo
+  type: File
+  value: files/Cookbooks.config
+  visibility: public
+

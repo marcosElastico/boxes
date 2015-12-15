@@ -1,0 +1,13 @@
+description: Ruby RVM
+icon: ruby.png
+id: a27e3cdf-4d32-4972-aec1-32ebc4e37e1b
+name: Ruby
+requirements:
+- linux
+variables:
+- name: RVM_RUBY_VERSION
+  required: false
+  type: Text
+  value: 2.1.2
+  visibility: public
+

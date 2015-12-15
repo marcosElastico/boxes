@@ -1,26 +1,12 @@
 #!/bin/bash -e
 
-if [[ -e /etc/redhat-release || -e /etc/system-release ]]
-then
-    OS=$(rpm -q --whatprovides redhat-release | cut -d"-" -f1)
-
-    case $OS in
-	    redhat)
-	    	yum -y install mysql-server
-            ;;
-        centos)
-            yum -y install http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm || true
-            yum -y install mysql-community-server
-            ;;
-        system)
-            yum -y install mysql-server
-            ;;
-        fedora)
-            yum -y install mysql-community-server
-            ;;
-    esac
-    
+if [[ -e /etc/redhat-release || -e /etc/system-release ]]; then
+    yum -y install mysql-server
+    mkdir -p /var/log/mysql/
+    chown -R mysql:mysql /var/log/mysql/
 else
     export DEBIAN_FRONTEND=noninteractive
-    apt-get -q -y update && apt-get -q -y install -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mysql-server
+    apt-get -q -y update
+    apt-get -q -y install -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mysql-server
+
 fi

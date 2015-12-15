@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [[ ! -z "$CA_CERT_FILE" ]]; then
+    cacertfile=`curl -k -s $CA_CERT_FILE`
+    if [ $(echo $cacertfile | wc -c) -gt 1 ]; then
+	    mkdir -p /etc/rabbitmq/ssl
+	
+        curl -k -s $SERVER_KEY_FILE -o /etc/rabbitmq/ssl/server_key.pem
+        elasticbox set SERVER_KEY_PATH /etc/rabbitmq/ssl/server_key.pem
+	
+        curl -k -s $SERVER_CERT_FILE -o /etc/rabbitmq/ssl/server_cert.pem
+        elasticbox set SERVER_CERT_PATH /etc/rabbitmq/ssl/server_cert.pem
+    
+        curl -k -s $CA_CERT_FILE -o /etc/rabbitmq/ssl/cacert.pem
+        elasticbox set CA_CERT_PATH /etc/rabbitmq/ssl/cacert.pem
+    fi
+fi

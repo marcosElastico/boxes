@@ -1,48 +1,49 @@
-description: A free, open-source, high-performance HTTP server
+description: A free, open-source, high-performance HTTP server and reverse proxy
 icon: nginx.png
-id: 8e176772-5c6c-4d5a-8f6e-cbf342142520
+id: 36bafc15-572c-4234-ba22-f1a575323e0b
 name: Nginx
 requirements:
 - linux
 variables:
-- name: PUBLIC_SSL_CERTIFICATE
+- name: http
   required: false
+  type: Port
+  value: '80'
+  visibility: public
+- name: CHEF_DEFAULT_RB
+  required: false
+  scope: chef_cookbook
   type: File
-  value: files/public.crt
-  visibility: internal
-- name: PRIVATE_SSL_KEY
+  value: files/default.rb
+  visibility: public
+- automatic_updates: 'off'
+  name: chef_cookbook
   required: false
+  type: Box
+  value: c149114d-8298-4c36-be8a-1fb02e6ec975
+  visibility: public
+- automatic_updates: 'off'
+  name: chef_solo
+  required: false
+  type: Box
+  value: 05b76b08-5238-4e05-ae5f-8ea8afe00378
+  visibility: public
+- name: CHEF_METADATA_RB
+  required: false
+  scope: chef_cookbook
   type: File
-  value: files/private.key
-  visibility: internal
-- name: NGINX_CONF
+  value: files/metadata.rb
+  visibility: public
+- name: CHEF_SOLO_JSON
   required: false
+  scope: chef_solo
   type: File
-  value: files/nginx.conf
-  visibility: internal
-- name: NGINX_USER
+  value: files/solo.json
+  visibility: public
+- name: COOKBOOK_LIST
   required: false
-  type: Text
-  value: root
-  visibility: internal
-- name: NGINX_GROUP
-  required: false
-  type: Text
-  value: root
-  visibility: internal
-- name: LOG_PATH
-  required: false
-  type: Text
-  value: /var/log/nginx
-  visibility: internal
-- name: CACHE_PATH
-  required: false
-  type: Text
-  value: /var/nginx/cache
-  visibility: internal
-- name: CERTIFICATE_PATH
-  required: false
-  type: Text
-  value: /var/nginx/certificates
-  visibility: internal
+  scope: chef_solo
+  type: File
+  value: files/Cookbooks.config
+  visibility: public
 

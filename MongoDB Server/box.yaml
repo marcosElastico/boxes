@@ -1,0 +1,68 @@
+description: Open-source document-oriented NoSQL database
+icon: mongodb.png
+id: 4b51ce66-038a-4c70-acf3-ca52c979857e
+name: MongoDB Server
+requirements:
+- linux
+variables:
+- name: username
+  required: true
+  type: Text
+  value: ''
+  visibility: public
+- name: password
+  required: true
+  type: Password
+  visibility: public
+- name: VERSION
+  options: 2.6.1,latest
+  required: false
+  type: Options
+  value: 2.6.1
+  visibility: public
+- name: DB_PATH
+  required: false
+  type: Text
+  value: default
+  visibility: public
+- name: LOG_PATH
+  required: false
+  type: Text
+  value: default
+  visibility: public
+- name: mongodb
+  required: false
+  type: Port
+  value: '27017'
+  visibility: public
+- name: PUPPET_DEFAULT
+  required: false
+  scope: puppet
+  type: File
+  value: files/default.pp
+  visibility: public
+- name: CLONE_URL
+  required: false
+  scope: github.git_repo
+  type: Text
+  value: https://github.com/ElasticBox/mongodb.git
+  visibility: public
+- name: CLONE_DIRECTORY
+  required: false
+  scope: github.git_repo
+  type: Text
+  value: /etc/puppet/modules/mongodb
+  visibility: public
+- automatic_updates: 'off'
+  name: github
+  required: false
+  type: Box
+  value: 758de981-475a-47fc-b0d9-342edda52a82
+  visibility: public
+- automatic_updates: 'off'
+  name: puppet
+  required: false
+  type: Box
+  value: 08cc115c-4738-4f69-a8b7-da2e1dfec27c
+  visibility: public
+

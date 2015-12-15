@@ -1,0 +1,12 @@
+#!/bin/bash
+
+mkdir -p ~/.ssh
+if [ ! -f ~/.ssh/config  ]; then
+
+  cat > ~/.ssh/config << SSH_CONFIG
+Host github.com
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+SSH_CONFIG
+
+fi

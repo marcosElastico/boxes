@@ -1,0 +1,14 @@
+{
+    "couchbase":{
+        "server":{
+            "username":"$USERNAME",
+            "password":"$PASSWORD",
+            "memory_quota_mb":256,
+            "edition":"$EDITION",
+            "version":"$VERSION"
+        }
+    },
+    "run_list": [
+        "recipe[elasticbox]"
+    ]
+}

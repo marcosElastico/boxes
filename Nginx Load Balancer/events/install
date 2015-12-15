@@ -3,14 +3,23 @@
 if [[ -e /etc/redhat-release || -e /etc/system-release ]]
 then
     OS=$(rpm -q --whatprovides redhat-release | cut -d"-" -f1)
+    RELEASE=$(rpm -q --whatprovides redhat-release | cut -d"-" -f3)
 
     case $OS in
 	    redhat)
-	    	yum -y install epel-release
+            if [[ -z "$(yum repolist | grep 'nginx')" ]]
+            then
+                rpm -ivh http://nginx.org/packages/rhel/${RELEASE}/noarch/RPMS/nginx-release-rhel-${RELEASE}-0.el${RELEASE}.ngx.noarch.rpm
+	    	fi
+            
             yum -y install nginx
             ;;
         centos)
-            yum -y install epel-release
+            if [[ -z "$(yum repolist | grep 'nginx')" ]]
+            then
+                rpm -ivh http://nginx.org/packages/centos/${RELEASE}/noarch/RPMS/nginx-release-centos-${RELEASE}-0.el${RELEASE}.ngx.noarch.rpm
+            fi
+            
             yum -y install nginx
             ;;
         system)
@@ -27,3 +36,5 @@ else
     apt-get -q -y install -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" nginx
 fi
 
+# Delete default configuration files
+rm -f /etc/nginx/conf.d/*

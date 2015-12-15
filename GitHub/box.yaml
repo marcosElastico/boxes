@@ -1,0 +1,14 @@
+description: Build software better, together
+icon: github.png
+id: 6263c69f-a6c0-4c6c-bdeb-ba368cf1fa68
+name: GitHub
+requirements:
+- linux
+variables:
+- automatic_updates: 'off'
+  name: git_repo
+  required: false
+  type: Box
+  value: b9abd0d9-0e9c-4c2c-928a-2896e35d854d
+  visibility: public
+

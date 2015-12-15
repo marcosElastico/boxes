@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ -x /usr/bin/yum ]; then
+    yum install git -y 
+else
+    apt-get install git -y
+fi

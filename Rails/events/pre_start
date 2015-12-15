@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#if ($RAILS_APP != '')
+cd $folder/$RAILS_APP/current
+export PATH=$PATH:/usr/local/bin
+bundle exec rails s -e production -d
+#end

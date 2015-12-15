@@ -1,0 +1,48 @@
+description: Apache HTTP Server with PHP modules enabled
+icon: php.png
+id: 059e09db-0f7b-490f-8abe-066251997050
+name: PHP
+requirements:
+- linux
+variables:
+- name: http
+  required: false
+  type: Port
+  value: '80'
+  visibility: public
+- name: https
+  required: false
+  type: Port
+  value: '443'
+  visibility: public
+- name: CLONE_URL
+  required: false
+  scope: github.git_repo
+  type: Text
+  value: https://github.com/ElasticBox/php.git
+  visibility: public
+- name: PUPPET_DEFAULT
+  required: false
+  scope: puppet
+  type: File
+  value: files/default.pp
+  visibility: public
+- automatic_updates: 'off'
+  name: github
+  required: false
+  type: Box
+  value: 758de981-475a-47fc-b0d9-342edda52a82
+  visibility: public
+- automatic_updates: 'off'
+  name: puppet
+  required: false
+  type: Box
+  value: 08cc115c-4738-4f69-a8b7-da2e1dfec27c
+  visibility: public
+- name: CLONE_DIRECTORY
+  required: false
+  scope: github.git_repo
+  type: Text
+  value: /etc/puppet/modules/php
+  visibility: public
+

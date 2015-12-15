@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# store DNS name
+elasticbox set MASTER_DNS_NAME $(hostname)
+
+# Download puppet.conf
+curl -ks $PUPPET_CONF | elasticbox config -o /etc/puppet/puppet.conf
+curl -ks $SITE_PP | elasticbox config -o /etc/puppet/manifests/site.pp

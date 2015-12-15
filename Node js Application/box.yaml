@@ -1,6 +1,6 @@
 description: Downloads and deploys
 icon: nodejs.png
-id: 74a23ed1-5e7e-4b88-b210-a4e212e86802
+id: 65147d3e-b7d1-4b1b-8132-0c8600b0fa83
 name: Node js Application
 requirements:
 - linux
@@ -38,5 +38,4 @@ variables:
   type: Box
   value: 6263c69f-a6c0-4c6c-bdeb-ba368cf1fa68
   visibility: public
-version: '0.1'
 

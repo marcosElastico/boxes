@@ -1,0 +1,23 @@
+description: Git Repository
+icon: git.png
+id: b9abd0d9-0e9c-4c2c-928a-2896e35d854d
+name: Git Repository
+requirements:
+- linux
+variables:
+- name: CLONE_URL
+  required: true
+  type: Text
+  value: ''
+  visibility: public
+- name: CLONE_DIRECTORY
+  required: false
+  type: Text
+  value: ''
+  visibility: public
+- name: BRANCH
+  required: false
+  type: Text
+  value: master
+  visibility: public
+

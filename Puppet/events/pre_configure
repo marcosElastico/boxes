@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Create hiera directory
+[[ -d $HIERA_PATH ]] || mkdir -p $HIERA_PATH
+curl -ks $HIERA_COMMON  | elasticbox config -o $HIERA_PATH/common.yaml
+
+# Download puppet.conf and hiera.yaml and common.yaml
+curl -ks $PUPPET_CONF | elasticbox config -o /etc/puppet/puppet.conf
+curl -ks $HIERA_YAML  | elasticbox config -o /etc/puppet/hiera.yaml
+  
+# Run puppet
+curl -ks $PUPPET_DEFAULT | elasticbox config | puppet apply -v --detailed-exitcodes 
+
+# Override exit code 2 (No changes)
+[[ $? -eq 0 || $? -eq 2 ]] && exit 0 || exit $?

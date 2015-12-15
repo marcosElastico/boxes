@@ -1,0 +1,31 @@
+#!/bin/bash
+if [ -x /usr/bin/yum ]; then
+    yum install git openssl098e -y 
+else
+    if [[ ! -z $(cat /etc/*-release | grep lucid) ]]; then
+        # Ubuntu 10.04 LTS, codename "lucid"
+        apt-get install python-software-properties -y
+        add-apt-repository ppa:git-core/ppa
+        apt-get update -y
+        apt-get install git libssl0.9.8 -y
+        if [[ "${VERSION}" == "2.0.1" || "${VERSION}" == "2.1.1" ]]; then
+            echo http://packages.couchbase.com/releases/${VERSION}/couchbase-server-${EDITION}_x86_64_${VERSION}.deb
+            curl http://packages.couchbase.com/releases/${VERSION}/couchbase-server-${EDITION}_x86_64_${VERSION}.deb -o couchbase-server.deb
+        else
+            echo http://packages.couchbase.com/releases/${VERSION}/couchbase-server-${EDITION}_${VERSION}_x86_64_openssl098.deb
+            curl http://packages.couchbase.com/releases/${VERSION}/couchbase-server-${EDITION}_${VERSION}_x86_64_openssl098.deb -o couchbase-server.deb
+        fi
+        dpkg -i couchbase-server.deb
+    else    
+        apt-get update --fix-missing -yq && apt-get install git libssl0.9.8 -y
+        if [[ "${VERSION}" == "2.0.1" || "${VERSION}" == "2.1.1" ]]; then
+            echo http://packages.couchbase.com/releases/${VERSION}/couchbase-server-${EDITION}_x86_64_${VERSION}.deb
+            curl http://packages.couchbase.com/releases/${VERSION}/couchbase-server-${EDITION}_x86_64_${VERSION}.deb -o couchbase-server.deb
+        else
+            echo http://packages.couchbase.com/releases/${VERSION}/couchbase-server-${EDITION}_${VERSION}_x86_64.deb
+            curl http://packages.couchbase.com/releases/${VERSION}/couchbase-server-${EDITION}_${VERSION}_x86_64.deb -o couchbase-server.deb        
+        fi
+        dpkg -i couchbase-server.deb
+    fi
+    
+fi

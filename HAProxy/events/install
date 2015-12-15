@@ -5,8 +5,13 @@ if [[ -e /etc/redhat-release || -e /etc/system-release ]]; then
 else
     export DEBIAN_FRONTEND=noninteractive
     apt-get -q -y update
-    apt-get -q -y install -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" haproxy
+    apt-get -q -y install python-software-properties software-properties-common
 
+    # Add the haproxy repositories
+    add-apt-repository ppa:vbernat/haproxy-1.5
+    apt-get -q -y update
+    
+    apt-get -q -y install -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" haproxy
 fi
 
 echo 'ENABLED=1' > /etc/default/haproxy

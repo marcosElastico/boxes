@@ -4,7 +4,7 @@ if [[ -d "/opt/splunkforwarder/bin/splunk" ]]; then
    /opt/splunkforwarder/bin/splunk stop
 fi
 
-curl -qksL "{{ INSTALLER }}" -o splunk.tar.gz 
+wget -q -O splunk.tar.gz "{{ INSTALLER }}"
 
 if [[ ! $? -eq 0 ]]; then
   echo "Error downloading the installer from {{ INSTALLER }}"

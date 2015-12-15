@@ -1,0 +1,24 @@
+#!/bin/bash
+
+[[ -z "$CLONE_DIRECTORY" ]] && TARGET_DIRECTORY=\$(basename $CLONE_URL .git) || TARGET_DIRECTORY=$CLONE_DIRECTORY
+
+if [ ! -d $TARGET_DIRECTORY ]; then
+    if [ -z '$BRANCH' ]; then
+        git clone $CLONE_URL $CLONE_DIRECTORY
+    else
+        git clone -b $BRANCH $CLONE_URL $TARGET_DIRECTORY
+    fi
+else
+    cd $TARGET_DIRECTORY
+    git remote set-url origin $CLONE_URL
+    git clean -f
+    git fetch --all
+    git fetch --tags
+    if [ -z '$BRANCH' ]; then
+        git reset --hard origin
+    else
+        git reset --hard "origin/$BRANCH"
+    fi
+    
+    git pull origin $BRANCH
+fi

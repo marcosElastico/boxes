@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#if($MAIN_NODE.address)
+export PATH=$PATH:/opt/couchbase/bin
+
+name=`couchbase-cli server-list -c ${MAIN_NODE.address.private}:${MAIN_NODE.HTTP} -u ${MAIN_NODE.USERNAME} -p ${MAIN_NODE.PASSWORD} | grep ${address.private}:${HTTP} | cut -d' ' -f2`
+
+if [ "$name" != "${address.private}:${HTTP}" ]; then
+    couchbase-cli rebalance -c ${MAIN_NODE.address.private}:${MAIN_NODE.HTTP} -u ${MAIN_NODE.USERNAME} -p ${MAIN_NODE.PASSWORD} --server-add=${address.private}:${HTTP} --server-add-username=${USERNAME} --server-add-password=${PASSWORD}
+fi
+#end

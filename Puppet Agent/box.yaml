@@ -1,0 +1,23 @@
+description: Install the puppet agent and performs a puppet run
+icon: puppetxagent.png
+id: 8ce7996a-b20f-473b-8fa2-399d4d3258d3
+name: Puppet Agent
+requirements:
+- linux
+variables:
+- name: master
+  required: false
+  type: Binding
+  value: 4f3f4a3a-b3e9-49a3-8052-255dac07ee15
+  visibility: private
+- name: PUPPET_CONF
+  required: false
+  type: File
+  value: files/puppet.conf
+  visibility: public
+- name: PUPPET_FACTER
+  required: false
+  type: File
+  value: files/facter.sh
+  visibility: public
+

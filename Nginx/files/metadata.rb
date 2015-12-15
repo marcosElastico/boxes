@@ -1,0 +1,2 @@
+# metadata.rb
+depends 'nginx'

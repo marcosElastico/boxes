@@ -1,0 +1,26 @@
+description: Rails Quickstart
+icon: rails-sample.png
+id: 49b39d93-80b2-46b0-be9c-73033b796e7b
+name: Rails Quickstart
+requirements:
+- linux
+variables:
+- name: CLONE_URL
+  required: false
+  scope: Rails
+  type: Text
+  value: https://github.com/ElasticBox/rails-quickstart
+  visibility: public
+- name: RAILS_APP
+  required: false
+  scope: Rails
+  type: Text
+  value: rails-quickstart
+  visibility: public
+- automatic_updates: 'off'
+  name: Rails
+  required: false
+  type: Box
+  value: 06227663-5f55-43ed-b94f-f801e3f9938c
+  visibility: public
+

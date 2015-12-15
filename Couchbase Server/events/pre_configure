@@ -1,0 +1,5 @@
+#!/bin/bash
+
+rm -rf $folder/cookbooks/couchbase/
+cd $folder/cookbooks/
+git clone https://github.com/ketakigangal/couchbase

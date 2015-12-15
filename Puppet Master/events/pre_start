@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Start puppet master
+service puppetmaster restart

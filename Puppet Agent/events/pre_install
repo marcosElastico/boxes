@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Install puppet 
+if [[ -e /etc/redhat-release || -e /etc/system-release ]]; then
+    OS=$(rpm -q --whatprovides redhat-release | cut -d"-" -f1)
+    RELEASE=$(rpm -q --whatprovides redhat-release | cut -d"-" -f3)
+    
+    case $OS in
+	    redhat)
+	    	RELEASE=$(rpm -q --whatprovides redhat-release | cut -d"-" -f4 | head -c 1)
+            rpm -ivh http://yum.puppetlabs.com/puppetlabs-release-el-${RELEASE}.noarch.rpm
+            ;;
+        centos)
+            rpm -ivh https://yum.puppetlabs.com/el/${RELEASE}/products/$(uname -i)/puppetlabs-release-${RELEASE}-10.noarch.rpm
+            ;;
+        system)
+            rpm -ivh https://yum.puppetlabs.com/el/6/products/$(uname -i)/puppetlabs-release-6-10.noarch.rpm
+            ;;
+        fedora)
+            [[ $RELEASE == 19 ]] && PUPPET_RELEASE=19-2
+            [[ $RELEASE == 20 ]] && PUPPET_RELEASE=20-1
+            
+            rpm -ivh https://yum.puppetlabs.com/fedora/f${RELEASE}/products/$(uname -i)/puppetlabs-release-${PUPPET_RELEASE}.noarch.rpm
+            ;;
+    esac
+    
+    yum check-update
+    yum -y install puppet
+
+else
+    [[ -z $(which lsb_release 2>/dev/null) ]] && apt-get -y install lsb_release
+    CODENAME=$(lsb_release -c | cut -f2)
+    
+    wget -q https://apt.puppetlabs.com/puppetlabs-release-${CODENAME}.deb
+    dpkg -i puppetlabs-release-${CODENAME}.deb
+    rm puppetlabs-release-${CODENAME}.deb
+
+    apt-get -y update
+    apt-get -y install puppet
+fi
+
+RUBY_LIBDIR=$(ruby -r rbconfig -e 'puts RbConfig::CONFIG["sitelibdir"]')
+RUBY_VENDORDIR=$(ruby -r rbconfig -e 'puts RbConfig::CONFIG["vendordir"]')
+if [ -f ${RUBY_LIBDIR}/puppet/util/colors.rb ]; then
+    sed -i -e 's/\\e\[m/\\e\[0m/g' ${RUBY_LIBDIR}/puppet/util/colors.rb
+elif [ -f ${RUBY_VENDORDIR}/puppet/util/colors.rb ]; then
+    sed -i -e 's/\\e\[m/\\e\[0m/g' ${RUBY_VENDORDIR}/puppet/util/colors.rb
+fi

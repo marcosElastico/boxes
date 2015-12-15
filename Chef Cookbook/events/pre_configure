@@ -1,0 +1,6 @@
+#!/bin/bash
+
+mkdir -p cookbooks/$CHEF_COOKBOOK_NAME/recipes
+
+curl -ks $CHEF_DEFAULT_RB  | elasticbox config -o cookbooks/$CHEF_COOKBOOK_NAME/recipes/default.rb
+curl -ks $CHEF_METADATA_RB | elasticbox config -o cookbooks/$CHEF_COOKBOOK_NAME/metadata.rb

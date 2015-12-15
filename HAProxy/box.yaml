@@ -1,6 +1,6 @@
 description: Reliable, High Performance, TCP / HTTP Load Balancer
 icon: haproxy.png
-id: 571fdcee-875f-4e95-9f62-a09f28741405
+id: fbe1f028-d95e-4bde-958b-00a5d5ca50d6
 name: HAProxy
 requirements:
 - linux
@@ -14,6 +14,11 @@ variables:
   required: false
   type: Port
   value: '80'
+  visibility: public
+- name: CONFIG_FILE_NAME
+  required: false
+  type: Text
+  value: haproxy.cfg
   visibility: public
 - name: CONFIG_FILE
   required: false
@@ -31,5 +36,4 @@ variables:
   type: Binding
   value: AnyBox
   visibility: private
-version: '0.1'
 

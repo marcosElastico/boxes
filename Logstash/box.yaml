@@ -1,6 +1,6 @@
 description: Centralized Log shipping
 icon: logstash.png
-id: 0b9611bc-491b-452c-93aa-a066f0ad3f4d
+id: 04560033-0d5c-47ed-9c77-7b13b096c172
 name: Logstash
 requirements:
 - linux
@@ -70,5 +70,4 @@ variables:
   type: Binding
   value: 6781a8c8-7961-4ab1-9577-678a19b0eb92
   visibility: private
-version: '0.1'
 

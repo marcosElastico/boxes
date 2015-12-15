@@ -1,0 +1,9 @@
+---
+:backends:
+  - yaml
+:yaml:
+  :datadir: $HIERA_PATH
+:hierarchy:
+  - "%{environment}"
+  - common
+

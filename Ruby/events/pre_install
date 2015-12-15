@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Adding signature for the rvm package
+gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
+
+RVM_INSTALL_MD5=$([[ -f rvm_install.md5 ]] && cat rvm_install.md5)
+curl -Ls https://get.rvm.io | tee rvm_install.sh | [[ $RVM_INSTALL_MD5 == $(md5sum | tee rvm_install.md5) ]] || bash -s stable < rvm_install.sh
+
+# Set path for Chef
+sed -i "/# ElasticBox Generated for '$name' with environment '$environment' box 'Ruby'/d" /etc/profile; cat >> /etc/profile << PROFILE
+source /etc/profile.d/rvm.sh # ElasticBox Generated for '$name' with environment '$environment' box 'Ruby'
+PROFILE
+
+source /etc/profile.d/rvm.sh
+
+rvm install $RVM_RUBY_VERSION
+rvm use $RVM_RUBY_VERSION --default

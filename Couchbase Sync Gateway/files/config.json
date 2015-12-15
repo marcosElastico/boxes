@@ -1,0 +1,12 @@
+{
+   "interface":":$SYNC_PORT",
+   "adminInterface":":$ADMIN_PORT",
+   "log":["HTTP+","CRUD","REST+"],
+   "databases":{
+      "$BUCKET":{
+         "server":"http://${COUCHBASE_SERVER.address.public}:${COUCHBASE_SERVER.HTTP}",
+         "bucket":"$BUCKET",
+         "sync":`function(doc) {channel(doc.channels);}`
+      }
+   }
+}

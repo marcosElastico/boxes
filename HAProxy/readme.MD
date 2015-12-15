@@ -12,6 +12,7 @@ This box installs and configures an HAProxy load balancer.
 |   **http** | Specifies the port in which HAProxy will listen to connections. | 80 |
 |   **fallback_binding_port** | By default, the requests are redirected to the port defined with the "http" variable in the target box. May that variable not be defined, this value is used as a fallback value. | 80 |
 |   **CONFIG_FILE** | HAProxy configuration file. ||
+|   **CONFIG_FILE_NAME** | HAProxy configuration file name. ||
 |   **MODE** | The mode in which HAProxy will handle the requests. | http |
 |   **servers** | Binding to the servers that we want to load balance.|||
 

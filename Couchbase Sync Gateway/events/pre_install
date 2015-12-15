@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [[ -e /etc/redhat-release || -e /etc/system-release ]]; then
+    OS=$(rpm -q --whatprovides redhat-release | cut -d"-" -f1)
+    RELEASE=$(rpm -q --whatprovides redhat-release | cut -d"-" -f3)
+    
+    case $OS in
+	    redhat)
+	    	RELEASE=$(rpm -q --whatprovides redhat-release | cut -d"-" -f4 | head -c 1)
+            rpm -ivh http://packages.couchbase.com/releases/couchbase-sync-gateway/1.0.0/couchbase-sync-gateway-${EDITION}_1.0.0_x86_64.rpm
+            ;;
+        centos)
+            rpm -ivh http://packages.couchbase.com/releases/couchbase-sync-gateway/1.0.0/couchbase-sync-gateway-${EDITION}_1.0.0_x86_64.rpm
+            ;;
+        system)
+            rpm -ivh http://packages.couchbase.com/releases/couchbase-sync-gateway/1.0.0/couchbase-sync-gateway-${EDITION}_1.0.0_x86_64.rpm
+            ;;
+        fedora)
+            [[ $RELEASE == 19 ]] && PUPPET_RELEASE=19-2
+            [[ $RELEASE == 20 ]] && PUPPET_RELEASE=20-1
+            
+            rpm -ivh http://packages.couchbase.com/releases/couchbase-sync-gateway/1.0.0/couchbase-sync-gateway-${EDITION}_1.0.0_x86_64.rpm
+            ;;
+    esac
+
+else
+    wget -q http://packages.couchbase.com/releases/couchbase-sync-gateway/1.0.0/couchbase-sync-gateway-${EDITION}_1.0.0_x86_64.deb
+    dpkg -i couchbase-sync-gateway-${EDITION}_1.0.0_x86_64.deb
+    rm couchbase-sync-gateway-${EDITION}_1.0.0_x86_64.deb
+fi

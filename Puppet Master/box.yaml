@@ -1,0 +1,46 @@
+description: Install a puppet Master
+icon: puppetgmaster.png
+id: 4f3f4a3a-b3e9-49a3-8052-255dac07ee15
+name: Puppet Master
+requirements:
+- linux
+variables:
+- name: CLONE_URL
+  required: true
+  scope: modules.git_repo
+  type: Text
+  value: ''
+  visibility: public
+- name: CLONE_DIRECTORY
+  required: false
+  scope: modules.git_repo
+  type: Text
+  value: '{{ MODULES_DIRECTORY }}'
+  visibility: public
+- name: MASTER_DNS_NAME
+  required: false
+  type: Text
+  value: ''
+  visibility: public
+- name: PUPPET_CONF
+  required: false
+  type: File
+  value: files/puppet.conf
+  visibility: internal
+- name: SITE_PP
+  required: false
+  type: File
+  value: files/site.pp
+  visibility: internal
+- name: MODULES_DIRECTORY
+  required: false
+  type: Text
+  value: /usr/share/puppet/modules/
+  visibility: internal
+- automatic_updates: 'off'
+  name: modules
+  required: true
+  type: Box
+  value: 758de981-475a-47fc-b0d9-342edda52a82
+  visibility: public
+

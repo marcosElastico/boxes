@@ -1,0 +1,38 @@
+description: Configuration management software for systems administrators
+icon: puppetlabs.png
+id: 08cc115c-4738-4f69-a8b7-da2e1dfec27c
+name: Puppet
+requirements:
+- linux
+variables:
+- name: MODULES_DIRECTORY
+  required: false
+  type: Text
+  value: /etc/puppet/modules:/usr/share/puppet/modules
+  visibility: public
+- name: PUPPET_DEFAULT
+  required: false
+  type: File
+  value: files/default.pp
+  visibility: public
+- name: HIERA_PATH
+  required: false
+  type: Text
+  value: /etc/puppet/hieradata
+  visibility: public
+- name: HIERA_COMMON
+  required: false
+  type: File
+  value: files/common.yaml
+  visibility: public
+- name: PUPPET_CONF
+  required: false
+  type: File
+  value: files/puppet.conf
+  visibility: public
+- name: HIERA_YAML
+  required: false
+  type: File
+  value: files/hiera.yaml
+  visibility: public
+

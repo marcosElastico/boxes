@@ -1,0 +1,6 @@
+#
+# default.pp
+#
+node default {
+
+}

@@ -5,6 +5,11 @@ name: Splunk Universal Forwarder
 requirements:
 - linux
 variables:
+- name: test
+  required: false
+  type: Text:
+  value: testing
+  visibility: public
 - name: indexer
   required: true
   type: Port

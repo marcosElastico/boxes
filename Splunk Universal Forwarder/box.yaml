@@ -7,7 +7,7 @@ requirements:
 variables:
 - name: test
   required: false
-  type: Text:
+  type: Text
   value: testing
   visibility: public
 - name: indexer
@@ -50,4 +50,3 @@ variables:
   type: Binding
   value: AnyBox
   visibility: private
-

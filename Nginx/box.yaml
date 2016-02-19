@@ -1,6 +1,6 @@
 description: A free, open-source, high-performance HTTP server and reverse proxy
 icon: nginx.png
-id: 36bafc15-572c-4234-ba22-f1a575323e0b
+id: 7a2b5b0f-0069-4562-815e-74662a50b47d
 name: Nginx
 requirements:
 - linux
@@ -46,4 +46,3 @@ variables:
   type: File
   value: files/Cookbooks.config
   visibility: public
-

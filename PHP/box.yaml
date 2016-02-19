@@ -31,7 +31,7 @@ variables:
   name: github
   required: false
   type: Box
-  value: 758de981-475a-47fc-b0d9-342edda52a82
+  value: 3201d193-a176-4c3d-b059-05041c3eb255
   visibility: public
 - automatic_updates: 'off'
   name: puppet
@@ -45,4 +45,3 @@ variables:
   type: Text
   value: /etc/puppet/modules/php
   visibility: public
-

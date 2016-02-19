@@ -75,7 +75,7 @@ variables:
   name: nginx
   required: false
   type: Box
-  value: 8e176772-5c6c-4d5a-8f6e-cbf342142520
+  value: 7a2b5b0f-0069-4562-815e-74662a50b47d
   visibility: internal
 - automatic_updates: major
   name: php
@@ -89,4 +89,3 @@ variables:
   type: Box
   value: 320e8be7-5d05-4f74-a040-5d74836ae608
   visibility: public
-

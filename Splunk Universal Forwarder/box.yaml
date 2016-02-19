@@ -5,7 +5,7 @@ name: Splunk Universal Forwarder
 requirements:
 - linux
 variables:
-- name: test
+- name: test2
   required: false
   type: Text
   value: testing
